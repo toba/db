@@ -1,1 +1,0 @@
-import '@toba/test';

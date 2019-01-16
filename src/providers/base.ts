@@ -9,7 +9,7 @@ export enum EngineEvent {
    Error
 }
 
-export class Engine extends EventEmitter<EngineEvent, any> {
+export class DataProvider extends EventEmitter<EngineEvent, any> {
    isOpen: boolean;
    protected name: string;
    protected version: number;

@@ -9,6 +9,10 @@
 
 # Toba DB
 
+A standard data layer able to use different providers for mobile and web applications.
+The API is intentionally modeled after [Firestore](https://firebase.google.com/docs/firestore/)
+with the expectation it will often be used alongside Firestore.
+
 ```sh
 yarn add @toba/db --dev
 ```

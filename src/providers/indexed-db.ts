@@ -1,10 +1,10 @@
 import { Database, Collection } from '../';
-import { Engine, EngineEvent, DataType } from './base';
+import { DataProvider, EngineEvent, DataType } from './base';
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
  */
-export class IndexedDB extends Engine {
+export class IndexedDB extends DataProvider {
    db: IDBDatabase | null = null;
    collections: Map<string, IDBObjectStore> = new Map();
 
