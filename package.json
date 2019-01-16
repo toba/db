@@ -1,7 +1,7 @@
 {
    "name": "@toba/db",
    "version": "1.0.0",
-   "description": "toba db module",
+   "description": "Toba Database",
    "private": false,
    "author": {
       "name": "Jason Abbott",
@@ -13,7 +13,9 @@
    },
    "main": "dist/index.js",
    "types:": "dist/index.d.ts",
-   "files": ["dist/**/*"],
+   "files": [
+      "dist/**/*"
+   ],
    "scripts": {
       "prepublishOnly": "./node_modules/.bin/tsc --project tsconfig.build.json",
       "test": "jest --coverage"

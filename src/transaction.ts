@@ -20,4 +20,8 @@ export class Transaction<T> {
    update(doc: Document<T>, data: Partial<T>): this {
       return this;
    }
+
+   forEach(fn: (data: T) => void) {
+      return;
+   }
 }
