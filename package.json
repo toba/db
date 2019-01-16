@@ -1,0 +1,29 @@
+{
+   "name": "@toba/db",
+   "version": "1.0.0",
+   "description": "toba db module",
+   "private": false,
+   "author": {
+      "name": "Jason Abbott",
+      "url": "http://github.com/toba"
+   },
+   "license": "MIT",
+   "publishConfig": {
+      "access": "public"
+   },
+   "main": "dist/index.js",
+   "types:": "dist/index.d.ts",
+   "files": ["dist/**/*"],
+   "scripts": {
+      "prepublishOnly": "./node_modules/.bin/tsc --project tsconfig.build.json",
+      "test": "jest --coverage"
+   },
+   "devDependencies": {
+      "@toba/develop": "^4.0.0",
+      "@toba/test": "^3.0.0"
+   },
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/toba/db"
+   }
+}
