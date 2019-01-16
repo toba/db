@@ -1,4 +1,5 @@
 import { Collection } from './collection';
+import { Engine } from './engines';
 
 /**
  * An options object that configures the behavior of `set()` calls. These calls
@@ -27,14 +28,20 @@ export interface SetOptions {
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference
  */
 export class Document<T> {
+   private engine: Engine;
    id: string;
    parent: Collection<T>;
+   data: T;
+
+   constructor(engine: Engine) {
+      this.engine = engine;
+   }
 
    delete() {
       return;
    }
 
-   update(values: T) {
-      return;
+   update(values: T): this {
+      return this;
    }
 }

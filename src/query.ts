@@ -1,3 +1,5 @@
+import { Document } from './';
+
 export enum SortDirection {
    Ascending,
    Descending
@@ -15,22 +17,23 @@ export enum Operator {
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query
  */
 export class Query<T> {
-   limit(count: number) {
-      return;
+   limit(count: number): this {
+      return this;
    }
 
    sortBy(
       fieldName: string,
       direction: SortDirection = SortDirection.Ascending
-   ) {
-      return;
+   ): this {
+      return this;
    }
 
-   where(fieldPath: string, operator: Operator, value: any) {
-      return;
+   where(fieldPath: string, operator: Operator, value: any): this {
+      return this;
    }
 
    get(): Document<T> {
-      return null;
+      const d = new Document();
+      return d;
    }
 }

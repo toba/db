@@ -22,7 +22,9 @@
    },
    "devDependencies": {
       "@toba/develop": "^4.0.0",
-      "@toba/test": "^3.0.0"
+      "@toba/test": "^3.0.0",
+      "@types/react-native": "^0.57.28",
+      "react-native": "^0.57.8"
    },
    "repository": {
       "type": "git",
