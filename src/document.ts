@@ -1,5 +1,6 @@
+import { ulid } from 'ulid';
 import { Collection } from './collection';
-import { DataProvider, DataEntity } from './providers';
+import { DataEntity, DataProvider } from './providers';
 
 /**
  * An options object that configures the behavior of `set()` calls. These calls
@@ -31,6 +32,11 @@ export class Document<T> extends DataEntity {
    id: string;
    parent: Collection<T>;
    data: T;
+
+   constructor(provider: DataProvider) {
+      super(provider);
+      this.id = ulid();
+   }
 
    delete() {
       return;

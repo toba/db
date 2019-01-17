@@ -8,9 +8,9 @@ beforeAll(() => {
    jest.mock('AsyncStorage', () => new MockAsyncStorage());
 });
 
-// afterAll(() => {
-//    jest.unmock('AsyncStorage');
-// });
+afterAll(() => {
+   jest.unmock('AsyncStorage');
+});
 
 import { AsyncStorage as storage } from 'react-native';
 

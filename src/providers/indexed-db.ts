@@ -1,5 +1,7 @@
-import { Database, Collection } from '../';
+import { Collection, Document } from '../';
 import { DataProvider, DataEvent, DataType } from './base';
+
+// key range search https://github.com/mdn/indexeddb-examples/blob/master/idbkeyrange/scripts/main.js
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
@@ -12,7 +14,7 @@ export class IndexedDB extends DataProvider {
     * The version number is an unsigned `long` number, which means that it can
     * be a very big integer. It also means that you can't use a `float`,
     * otherwise it will be converted to the closest lower integer and the
-    * transaction may not start, nor the upgradeneeded event trigger. So for
+    * transaction may not start, nor the `upgradeneeded` event trigger. So for
     * example, don't use `2.4` as a version number.
     *
     * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Opening_a_database
@@ -68,6 +70,16 @@ export class IndexedDB extends DataProvider {
       const os = this.collections.get(collectionName);
       if (os !== undefined) {
          os.add(JSON.stringify(data));
+         return true;
+      }
+      return false;
+   }
+
+   deleteDocument<T extends DataType>(doc: Document<T>): boolean {
+      const collectionName = doc.parent.name;
+      const os = this.collections.get(collectionName);
+      if (os !== undefined) {
+         os.delete(doc.id);
          return true;
       }
       return false;

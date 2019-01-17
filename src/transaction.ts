@@ -22,6 +22,9 @@ export class Transaction<T> extends DataEntity {
       return this;
    }
 
+   /**
+    * Execute a function for each document in a collection.
+    */
    forEach(fn: (data: T) => void) {
       return;
    }
