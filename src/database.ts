@@ -8,12 +8,15 @@ export class Database extends DataEntity {
       super(provider);
    }
 
+   async open() {
+      await this.provider.open();
+   }
+
    async collection<T extends DataType>(
       name: string,
       primaryKey?: keyof T
    ): Promise<Collection<T>> {
       const c = await this.provider.getCollection<T>(name, primaryKey);
-      //const c = new Collection(this.engine);
       return c;
    }
 }
