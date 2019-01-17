@@ -8,7 +8,7 @@
             "showReuseMessage": false,
             "clear": true
          },
-         "args": ["--verbose"],
+         "args": ["--verbose"], //, "--no-watchman"],
          "type": "shell",
          "group": "test",
          "problemMatcher": []

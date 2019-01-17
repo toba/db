@@ -1,4 +1,5 @@
 import { Document } from './';
+import { DataEntity } from './providers';
 
 export enum SortDirection {
    Ascending,
@@ -16,7 +17,7 @@ export enum Operator {
 /**
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query
  */
-export class Query<T> {
+export class Query<T> extends DataEntity {
    limit(count: number): this {
       return this;
    }
@@ -33,7 +34,7 @@ export class Query<T> {
    }
 
    get(): Document<T> {
-      const d = new Document();
+      const d = new Document<T>(this.provider);
       return d;
    }
 }

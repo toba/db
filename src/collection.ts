@@ -1,12 +1,11 @@
 import { Document } from './';
-import { Engine } from './engines';
+import { DataProvider, DataEntity } from './providers';
 
-export class Collection<T> {
-   private engine: Engine;
+export class Collection<T> extends DataEntity {
    name: string;
 
-   constructor(engine: Engine, name: string) {
-      this.engine = engine;
+   constructor(provider: DataProvider, name: string) {
+      super(provider);
       this.name = name;
    }
 

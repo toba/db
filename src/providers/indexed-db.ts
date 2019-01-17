@@ -1,5 +1,5 @@
 import { Database, Collection } from '../';
-import { DataProvider, EngineEvent, DataType } from './base';
+import { DataProvider, DataEvent, DataType } from './base';
 
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
@@ -17,20 +17,20 @@ export class IndexedDB extends DataProvider {
     *
     * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Opening_a_database
     */
-   open(): Promise<void> {
-      return new Promise((resolve, reject) => {
+   open() {
+      return new Promise<void>((resolve, reject) => {
          const req = indexedDB.open(this.name, this.version);
          req.onerror = () => {
             this.db = null;
             reject(req.error);
-            this.removeAll(EngineEvent.Error);
+            this.removeAll(DataEvent.Error);
          };
          req.onsuccess = () => {
             this.db = req.result;
             resolve();
 
             this.db.onerror = (event: Event) => {
-               this.emit(EngineEvent.Error, event);
+               this.emit(DataEvent.Error, event);
             };
          };
       });

@@ -5,11 +5,11 @@ export interface DataType {
    [key: string]: any;
 }
 
-export enum EngineEvent {
+export enum DataEvent {
    Error
 }
 
-export class DataProvider extends EventEmitter<EngineEvent, any> {
+export abstract class DataProvider extends EventEmitter<DataEvent, any> {
    isOpen: boolean;
    protected name: string;
    protected version: number;
@@ -20,21 +20,22 @@ export class DataProvider extends EventEmitter<EngineEvent, any> {
       this.version = version;
    }
 
-   open(): Promise<void> {
-      return Promise.reject();
-   }
+   abstract open(): Promise<void>;
 
-   getCollection<T extends DataType>(
+   abstract getCollection<T extends DataType>(
       name: string,
       primaryKey?: keyof T
-   ): Promise<Collection<T>> {
-      return Promise.reject();
-   }
+   ): Promise<Collection<T>>;
 
-   addDocument<T extends DataType>(
+   abstract addDocument<T extends DataType>(
       collectionName: string,
       data: T
-   ): Promise<boolean> {
-      return Promise.reject();
+   ): Promise<boolean>;
+}
+
+export abstract class DataEntity {
+   protected provider: DataProvider;
+   constructor(provider: DataProvider) {
+      this.provider = provider;
    }
 }

@@ -18,12 +18,15 @@
    ],
    "scripts": {
       "prepublishOnly": "./node_modules/.bin/tsc --project tsconfig.build.json",
-      "test": "jest --coverage"
+      "test": "jest --coverage",
+      "postinstall": "node ./node_modules/@toba/test/scripts/patch-rn-jest.js"
    },
    "devDependencies": {
       "@toba/develop": "^4.0.0",
-      "@toba/test": "^3.0.0",
+      "@toba/test": "^3.4.0",
       "@types/react-native": "^0.57.28",
+      "babel-jest": "^23.6.0",
+      "babel-preset-react-native": "^4.0.1",
       "react-native": "^0.57.8"
    },
    "repository": {
