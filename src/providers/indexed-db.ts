@@ -1,4 +1,5 @@
-import { Collection, Document } from '../';
+import { is } from '@toba/tools';
+import { Collection, Document, Query, Result, SetOptions } from '../';
 import { DataProvider, DataEvent, DataType } from './base';
 
 // key range search https://github.com/mdn/indexeddb-examples/blob/master/idbkeyrange/scripts/main.js
@@ -66,8 +67,9 @@ export class IndexedDB extends DataProvider {
       return new Collection(this, name);
    }
 
-   async addDocument<T extends DataType>(collectionName: string, data: T) {
-      const os = this.collections.get(collectionName);
+   async addDocument<T extends DataType>(collectionID: string, data: T) {
+      const os = this.collections.get(collectionID);
+
       if (os !== undefined) {
          os.add(JSON.stringify(data));
          return true;
@@ -75,13 +77,43 @@ export class IndexedDB extends DataProvider {
       return false;
    }
 
+   saveDocument = <T extends DataType>(
+      doc: Document<T>,
+      options?: SetOptions<T>
+   ): Promise<void> =>
+      new Promise((resolve, reject) => {
+         const os = this.collections.get(doc.parent.id);
+
+         if (os === undefined) {
+            reject();
+            return;
+         }
+
+         const req: IDBRequest = os.add(doc.toString(), doc.id);
+         req.onsuccess = () => {
+            resolve();
+         };
+         req.onerror = () => {
+            reject();
+         };
+      });
+
    deleteDocument<T extends DataType>(doc: Document<T>): boolean {
-      const collectionName = doc.parent.name;
-      const os = this.collections.get(collectionName);
+      const collectionID = doc.parent.id;
+      const os = this.collections.get(collectionID);
+
       if (os !== undefined) {
          os.delete(doc.id);
          return true;
       }
       return false;
+   }
+
+   getDocument<T extends DataType>(doc: Document<T>): Promise<Document<T>> {
+      return Promise.resolve(doc);
+   }
+
+   query<T extends DataType>(q: Query<T>): Result<T> {
+      return new Result(q, []);
    }
 }

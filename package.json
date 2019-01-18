@@ -34,6 +34,7 @@
       "url": "https://github.com/toba/db"
    },
    "dependencies": {
+      "@toba/tools": "^5.1.3",
       "ulid": "^2.3.0"
    }
 }

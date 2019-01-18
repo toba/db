@@ -1,5 +1,5 @@
-import { EventEmitter } from '@toba/tools';
-import { Collection } from '../';
+import { EventEmitter, is } from '@toba/tools';
+import { Document, Collection, Result, Query, SetOptions } from '../';
 
 /**
  * Type of data stored in a `Document`.
@@ -39,17 +39,26 @@ export abstract class DataProvider extends EventEmitter<DataEvent, any> {
       primaryKey?: keyof T
    ): Promise<Collection<T>>;
 
-   abstract addDocument<T extends DataType>(
-      collectionName: string,
-      data: T
-   ): Promise<boolean>;
+   abstract saveDocument<T extends DataType>(
+      doc: Document<T>,
+      options?: SetOptions<T>
+   ): Promise<void>;
+
+   abstract getDocument<T extends DataType>(
+      doc: Document<T>
+   ): Promise<Document<T>>;
+
+   abstract deleteDocument<T extends DataType>(doc: Document<T>): boolean;
+
+   abstract query<T extends DataType>(q: Query<T>): Result<T>;
 }
 
 /**
  * An entity with access to a `DataProvider`.
  */
 export abstract class DataEntity {
-   protected provider: DataProvider;
+   public provider: DataProvider;
+
    constructor(provider: DataProvider) {
       this.provider = provider;
    }

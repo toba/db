@@ -4,21 +4,27 @@ import { Document, Query } from './';
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.QuerySnapshot
  */
 export class Result<T> {
-   query: Query<T>;
+   private query: Query<T>;
+   private matches: Document<T>[];
+
+   constructor(query: Query<T>, matches: Document<T>[]) {
+      this.query = query;
+      this.matches = matches;
+   }
 
    docs(): Document<T>[] {
-      return [];
+      return this.matches;
    }
 
    /**
     * True if there are no documents in the result.
     */
    get empty(): boolean {
-      return false;
+      return this.matches.length === 0;
    }
 
    get size(): number {
-      return 0;
+      return this.matches.length;
    }
 
    isEqual(other: Result<T>): boolean {

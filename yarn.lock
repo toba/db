@@ -765,7 +765,7 @@
     jest-date-mock "^1.0.6"
     ts-jest "^23.10.4"
 
-"@toba/tools@^5.0.0":
+"@toba/tools@^5.0.0", "@toba/tools@^5.1.3":
   version "5.1.3"
   resolved "https://registry.yarnpkg.com/@toba/tools/-/tools-5.1.3.tgz#335dd407b942c1e04d18c0f2c8062e4babc1871d"
   integrity sha512-x/OF9qJ81eft0GeXmk3PdwH5Bj/SW78aa3IFYkROQMe5zN6j4/QHLuCJkTTxhmyn5vQACR1xb2S4sAgMUgh81g==

@@ -2,21 +2,22 @@ import { Collection } from './';
 import { DataProvider, DataType, DataEntity } from './providers/';
 
 export class Database extends DataEntity {
+   name: string;
    version: number;
 
    constructor(provider: DataProvider, name: string, version: number = 1) {
       super(provider);
+      this.name = name;
+      this.version = version;
    }
 
-   async open() {
-      await this.provider.open();
-   }
+   open = () => this.provider.open();
 
    async collection<T extends DataType>(
-      name: string,
+      id: string,
       primaryKey?: keyof T
    ): Promise<Collection<T>> {
-      const c = await this.provider.getCollection<T>(name, primaryKey);
+      const c = await this.provider.getCollection<T>(id, primaryKey);
       return c;
    }
 }
