@@ -38,10 +38,13 @@ export class IndexedDB extends DataProvider {
     */
    collections: Map<string, IDBObjectStore> = new Map();
 
-   private ensureDB = () =>
-      new Promise<IDBDatabase>(resolve =>
-         this.db !== null ? resolve(this.db) : this.open()
-      );
+   private ensureDB = (): Promise<IDBDatabase> =>
+      this.db !== null
+         ? Promise.resolve(this.db)
+         : new Promise(async resolve => {
+              await this.open();
+              resolve(this.db!);
+           });
 
    /**
     *
@@ -52,25 +55,38 @@ export class IndexedDB extends DataProvider {
     */
    open = () =>
       new Promise<void>((resolve, reject) => {
-         const req = indexedDB.open(this.name, this.version);
+         const req = indexedDB.open(this.schema.name, this.schema.version);
 
-         req.onerror = () => {
-            this.db = null;
-            reject(req.error);
-            this.removeAll(DataEvent.Error);
-         };
-
-         req.onsuccess = () => {
-            this.db = req.result;
-            resolve();
-
-            this.db.onerror = (event: Event) => {
-               this.emit(DataEvent.Error, event);
-            };
-         };
-
+         req.onerror = this.onError(req, reject);
+         req.onsuccess = this.onSuccess(req, resolve);
          req.onupgradeneeded = this.upgrade(req);
       });
+
+   close() {
+      if (this.db !== null) {
+         this.db.close();
+         this.db = null;
+      }
+   }
+
+   private onError = (
+      req: IDBOpenDBRequest,
+      cb: (er: DOMException | null) => void
+   ) => () => {
+      this.db = null;
+      cb(req.error);
+      this.removeAll(DataEvent.Error);
+   };
+
+   private onSuccess = (req: IDBOpenDBRequest, cb: () => void) => () => {
+      this.db = req.result;
+      cb();
+
+      this.db.onerror = (event: Event) => {
+         // TODO: evaluate whether db should be closed
+         this.emit(DataEvent.Error, event);
+      };
+   };
 
    /**
     * The database will already have the object stores from the previous version
@@ -93,31 +109,24 @@ export class IndexedDB extends DataProvider {
     * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Creating_or_updating_the_version_of_the_database
     */
    private upgrade = (req: IDBOpenDBRequest) => (ev: IDBVersionChangeEvent) => {
-      this.db = req.result;
-      // Create an objectStore for this database
-      //var objectStore = db.createObjectStore('name', { keyPath: 'myKey' });
+      const db = req.result;
+
+      this.schema.collections.forEach(c => {
+         db.createObjectStore(c.name, createOptions);
+      });
    };
 
    /**
-    * Collections in IndexedDB are called object stores.
-    *
-    * Object stores are created with a single call to `createObjectStore()`. The
-    * method takes a name of the store, and a parameter object. Even though the
-    * parameter object is optional, it is very important, because it lets you
-    * define important optional properties and refine the type of object store
-    * you want to create.
-    * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Structuring_the_database
+    * Names of collections created within the data store.
     */
-   async getCollection<T extends DataType>(
-      schema: CollectionSchema<T>
-   ): Promise<Collection<T>> {
+   async collectionNames(): Promise<string[]> {
       const db = await this.ensureDB();
+      const names: string[] = [];
 
-      if (!this.collections.has(name)) {
-         const os = db.createObjectStore(name, createOptions);
-         this.collections.set(name, os);
+      for (let i = 0; i < db.objectStoreNames.length; i++) {
+         names.push(db.objectStoreNames.item(i)!);
       }
-      return new Collection(this, schema);
+      return names;
    }
 
    async addDocument<T extends DataType>(collectionID: string, data: T) {

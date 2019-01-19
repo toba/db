@@ -14,12 +14,6 @@ export class Collection<T extends DataType> extends DataEntity {
    schema: CollectionSchema<T>;
 
    /**
-    * User-friendly name of the collection.
-    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#id
-    */
-   id: string;
-
-   /**
     * A reference to the containing `Document` if this is a subcollection. If
     * this isn't a subcollection, the reference is null.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#parent
@@ -29,7 +23,6 @@ export class Collection<T extends DataType> extends DataEntity {
    constructor(provider: DataProvider, schema: CollectionSchema<T>) {
       super(provider);
       this.schema = schema;
-      this.id = schema.name;
    }
 
    /**
