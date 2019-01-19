@@ -9,6 +9,7 @@ import {
 } from './';
 import { DataProvider, DataType, DataEntity } from './providers';
 import { is } from '@toba/tools';
+import { ulid } from 'ulid';
 
 export class Collection<T extends DataType> extends DataEntity {
    schema: CollectionSchema<T>;
@@ -30,16 +31,20 @@ export class Collection<T extends DataType> extends DataEntity {
     * it a document ID automatically.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#add
     */
-   async add(data: T): Promise<Document<T>> {
-      const doc = new Document(this);
-      await doc.set(data);
+   add(data: T, save = false): Document<T> {
+      const doc = new Document<T>(this, data.id);
+      if (save) {
+         doc.set(data);
+      } else {
+         doc.setWithoutSaving(data);
+      }
       return doc;
    }
 
    /**
-    * Gets a `Document` for the document within the collection with the ID. If
-    * no ID is specified, an automatically-generated unique ID will be used for
-    * the returned `Document`.
+    * Creates a `Document` for the data within the collection having an ID. If
+    * no ID is specified, an automatically-generated unique ID will be used to
+    * create a new `Document`.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#doc
     */
    async doc(id?: string): Promise<Document<T>> {

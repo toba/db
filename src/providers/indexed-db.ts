@@ -1,6 +1,12 @@
-import { Collection, Document, Query, Result, SetOptions } from '../';
+import {
+   Collection,
+   Document,
+   Query,
+   Result,
+   SetOptions,
+   CollectionSchema
+} from '../';
 import { DataProvider, DataEvent, DataType } from './base';
-import { CollectionSchema } from '../schema';
 
 export enum AccessType {
    ReadWrite = 'readwrite',
@@ -129,14 +135,13 @@ export class IndexedDB extends DataProvider {
       return names;
    }
 
-   async addDocument<T extends DataType>(collectionID: string, data: T) {
-      const os = this.collections.get(collectionID);
-
-      if (os !== undefined) {
-         os.add(JSON.stringify(data));
-         return true;
-      }
-      return false;
+   private async objectStore<T extends DataType>(
+      doc: Document<T>,
+      access: AccessType = AccessType.ReadOnly
+   ): Promise<IDBObjectStore> {
+      const db = await this.ensureDB();
+      const id = doc.parent.schema.name;
+      return db.transaction(id, access).objectStore(id);
    }
 
    saveDocument = <T extends DataType>(
@@ -144,11 +149,8 @@ export class IndexedDB extends DataProvider {
       options?: SetOptions<T>
    ) =>
       new Promise<void>(async (resolve, reject) => {
-         const db = await this.ensureDB();
-         const req: IDBRequest<IDBValidKey> = db
-            .transaction(doc.parent.id, AccessType.ReadWrite)
-            .objectStore(doc.parent.id)
-            .add(doc.data());
+         const os = await this.objectStore(doc, AccessType.ReadWrite);
+         const req: IDBRequest<IDBValidKey> = os.add(doc.data());
 
          req.onsuccess = () => resolve();
          req.onerror = () => reject();
@@ -156,11 +158,8 @@ export class IndexedDB extends DataProvider {
 
    deleteDocument = <T extends DataType>(doc: Document<T>) =>
       new Promise<void>(async (resolve, reject) => {
-         const db = await this.ensureDB();
-         const req: IDBRequest = db
-            .transaction(doc.parent.id, AccessType.ReadWrite)
-            .objectStore(doc.parent.id)
-            .delete(doc.id);
+         const os = await this.objectStore(doc, AccessType.ReadWrite);
+         const req: IDBRequest = os.delete(doc.id);
 
          req.onsuccess = () => resolve();
          req.onerror = () => reject();
@@ -170,16 +169,22 @@ export class IndexedDB extends DataProvider {
     * Retrieve a single document. A new transaction will always be created to
     * save the document so this operation can always be read-only.
     */
-   getDocument = <T extends DataType>(doc: Document<T>) =>
-      new Promise<Document<T>>(async (resolve, reject) => {
-         const db = await this.ensureDB();
-         const req: IDBRequest<T> = db
-            .transaction(doc.parent.id)
-            .objectStore(doc.parent.id)
-            .get(doc.id);
+   getDocument<T extends DataType>(doc: Document<T>): Promise<Document<T>>;
+   getDocument<T extends DataType>(
+      collection: CollectionSchema<T>,
+      id: string
+   ): Promise<Document<T>>;
+   getDocument<T extends DataType>(
+      docOrSchema: Document<T> | CollectionSchema<T>,
+      id?: string
+   ) {
+      return new Promise<Document<T>>(async (resolve, reject) => {
+         const doc = this.ensureDoc(docOrSchema, id);
+         const os = await this.objectStore(doc);
+         const req: IDBRequest<T> = os.get(doc.id);
 
          req.onsuccess = () => {
-            doc.fill(req.result);
+            doc.setWithoutSaving(req.result);
             resolve(doc);
          };
 
@@ -187,6 +192,7 @@ export class IndexedDB extends DataProvider {
             reject();
          };
       });
+   }
 
    /**
     * key range search https://github.com/mdn/indexeddb-examples/blob/master/idbkeyrange/scripts/main.js

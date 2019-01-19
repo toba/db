@@ -1,7 +1,7 @@
 import { EventEmitter } from '@toba/tools';
 import {
-   Document,
    Collection,
+   Document,
    Result,
    Query,
    SetOptions,
@@ -12,14 +12,13 @@ import {
 /**
  * Type of data stored in a `Document`.
  */
-export interface DataType {
+export type DataType = {
    /**
-    * The primary key which should be a generated ULID.
+    * The primary document key. If not supplied, a ULID will be generated.
     * @see https://github.com/ulid/javascript
     */
-   id: string;
-   [key: string]: any;
-}
+   id?: string;
+};
 
 /**
  * Event emitted by a `DataProvider`.
@@ -50,9 +49,34 @@ export abstract class DataProvider extends EventEmitter<DataEvent, any> {
       options?: SetOptions<T>
    ): Promise<void>;
 
+   /**
+    * Retrieve a single document. A new transaction will always be created to
+    * save the document so this operation can always be read-only.
+    */
    abstract getDocument<T extends DataType>(
       doc: Document<T>
    ): Promise<Document<T>>;
+   abstract getDocument<T extends DataType>(
+      collection: CollectionSchema<T>,
+      id: string
+   ): Promise<Document<T>>;
+   abstract getDocument<T extends DataType>(
+      docOrSchema: Document<T> | CollectionSchema<T>,
+      id?: string
+   ): Promise<Document<T>>;
+
+   protected ensureDoc<T extends DataType>(
+      docOrSchema: Document<T> | CollectionSchema<T>,
+      id?: string
+   ): Document<T> {
+      if (id !== undefined) {
+         const schema = docOrSchema as CollectionSchema<T>;
+         const c = new Collection<T>(this, schema);
+         return new Document<T>(c, id);
+      } else {
+         return docOrSchema as Document<T>;
+      }
+   }
 
    abstract deleteDocument<T extends DataType>(doc: Document<T>): Promise<void>;
 

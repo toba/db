@@ -80,24 +80,28 @@ export class Document<T extends DataType> {
       this.values === undefined ? Promise.reject() : this.set(values);
 
    /**
-    * Write to the document. If the document does not exist yet, it will be
-    * created. Options may be passed to merge new values instead of completely
-    * replacing existing values.
+    * Save new document data in provider. If the document does not exist yet, it
+    * will be created. Options may be passed to merge new values instead of
+    * completely replacing existing values.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#set
     */
    set(values: T, options?: SetOptions<T>): Promise<void> {
-      this.fill(values);
+      this.setWithoutSaving(values);
       return this.parent.provider.saveDocument(this, options);
    }
 
    toString = () => JSON.stringify(this.values);
 
    /**
-    * Fill document with data values. This method is expected to be used by data
-    * providers since it does not persist the data. It only updates the document
-    * instance.
+    * Set document values without saving them. This will typically only be used
+    * by data providers.
     */
-   fill(values: T) {
+   setWithoutSaving(values: T) {
+      if (values.id !== undefined && values.id !== this.id) {
+         throw new Error(
+            `Document ID ${this.id} does not match data ID ${values.id}`
+         );
+      }
       this.values = values;
    }
 }

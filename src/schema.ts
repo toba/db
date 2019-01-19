@@ -15,7 +15,7 @@ export interface Marshall<T extends DataType> {
 /**
  * Database schema.
  */
-export interface Schema {
+export interface MockSchema {
    /** Database name. */
    name: string;
 

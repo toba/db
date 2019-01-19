@@ -1,17 +1,19 @@
-import { Schema, CollectionSchema } from '../../';
+import { Schema as MockSchema, CollectionSchema } from '../../';
+import { DataType } from '../base';
 
-interface Order {
-   id: string;
+export interface MockOrder extends DataType {
+   itemID: string;
+   on: Date;
    quantity: number;
 }
 
-interface Item {
+export interface MockItem {
    id: string;
    name: string;
-   descreiption: string;
+   description: string;
 }
 
-export const itemSchema: CollectionSchema<Item> = {
+export const itemSchema: CollectionSchema<MockItem> = {
    name: 'items',
    indexes: [
       {
@@ -21,17 +23,17 @@ export const itemSchema: CollectionSchema<Item> = {
    ]
 };
 
-export const orderSchema: CollectionSchema<Order> = {
+export const orderSchema: CollectionSchema<MockOrder> = {
    name: 'orders',
    indexes: [
       {
-         field: 'quantity',
+         field: 'itemID',
          unique: false
       }
    ]
 };
 
-export const schema: Schema = {
+export const mockSchema: MockSchema = {
    name: 'mock',
    version: 1,
    collections: [orderSchema, itemSchema]
