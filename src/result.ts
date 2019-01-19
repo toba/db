@@ -1,9 +1,10 @@
 import { Document, Query } from './';
+import { DataType } from './providers';
 
 /**
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.QuerySnapshot
  */
-export class Result<T> {
+export class Result<T extends DataType> {
    private query: Query<T>;
    private matches: Document<T>[];
 

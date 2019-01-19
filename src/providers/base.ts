@@ -1,10 +1,22 @@
 import { EventEmitter, is } from '@toba/tools';
-import { Document, Collection, Result, Query, SetOptions } from '../';
+import {
+   Document,
+   Collection,
+   Result,
+   Query,
+   SetOptions,
+   CollectionSchema
+} from '../';
 
 /**
  * Type of data stored in a `Document`.
  */
 export interface DataType {
+   /**
+    * The primary key which should be a generated ULID.
+    * @see https://github.com/ulid/javascript
+    */
+   id: string;
    [key: string]: any;
 }
 
@@ -24,6 +36,14 @@ export abstract class DataProvider extends EventEmitter<DataEvent, any> {
     */
    isOpen: boolean;
    protected name: string;
+   /**
+    * The version to open the database with. If the version is not provided and
+    * the database exists, then a connection to the database will be opened
+    * without changing its version. If the version is not provided and the
+    * database does not exist, then it will be created with version 1
+    * (IndexedDB documentation).
+    * @see https://developer.mozilla.org/en-US/docs/Web/API/IDBFactory/open#Parameters
+    */
    protected version: number;
 
    constructor(name: string, version: number = 1) {
@@ -35,8 +55,7 @@ export abstract class DataProvider extends EventEmitter<DataEvent, any> {
    abstract open(): Promise<void>;
 
    abstract getCollection<T extends DataType>(
-      name: string,
-      primaryKey?: keyof T
+      schema: CollectionSchema<T>
    ): Promise<Collection<T>>;
 
    abstract saveDocument<T extends DataType>(

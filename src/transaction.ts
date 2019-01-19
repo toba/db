@@ -1,16 +1,16 @@
 import { Document, SetOptions } from './';
-import { DataEntity } from './providers';
+import { DataEntity, DataType } from './providers';
 
 /**
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Transaction
  */
-export class Transaction<T> extends DataEntity {
+export class Transaction<T extends DataType> extends DataEntity {
    delete(doc: Document<T>): Promise<void> {
       return doc.delete();
    }
 
-   get(doc: Document<T>): Promise<T> {
-      return Promise.resolve<T>(doc.data);
+   get(doc: Document<T>): Promise<T | undefined> {
+      return Promise.resolve<T | undefined>(doc.data());
    }
 
    set(doc: Document<T>, values: T, options: SetOptions<T>): this {

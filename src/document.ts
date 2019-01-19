@@ -1,7 +1,7 @@
 import { is } from '@toba/tools';
 import { ulid } from 'ulid';
-import { Collection } from './collection';
-import { SetOptions } from './options';
+import { DataType } from './providers';
+import { Collection, SetOptions } from './';
 
 /**
  * Document combines the features of a FireStore `DocumentReference` and
@@ -10,7 +10,7 @@ import { SetOptions } from './options';
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference
  */
-export class Document<T> {
+export class Document<T extends DataType> {
    /**
     * The document's identifier within its collection.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#id

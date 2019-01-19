@@ -14,27 +14,27 @@ export enum Operator {
    EqualOrLess,
    Equal,
    /**
-    * Find documents where a field is an array and contains a specified value.
+    * Match documents where a field is an array and contains a specified value.
     */
    ArrayContains
 }
 
 export type Boundary<T extends DataType> = Document<T> | Partial<T>;
 
-export interface Range<T> {
+export interface Range<T extends DataType> {
    endAt?: Boundary<T>;
    endBefore?: Boundary<T>;
    startAfter?: Boundary<T>;
    startAt?: Boundary<T>;
 }
 
-export interface Match<T, K extends keyof T> {
+export interface Match<T extends DataType, K extends keyof T> {
    field?: K;
    value?: T[K] | Array<T[K]>;
    operator?: Operator;
 }
 
-export interface Sort<T> {
+export interface Sort<T extends DataType> {
    field?: keyof T;
    direction?: SortDirection;
 }

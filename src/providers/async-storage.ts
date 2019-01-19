@@ -1,4 +1,11 @@
-import { Collection, Query, Result } from '../';
+import {
+   Collection,
+   Query,
+   Result,
+   Document,
+   CollectionSchema,
+   SetOptions
+} from '../';
 import { DataProvider, DataType } from './base';
 
 export class AsyncStorage extends DataProvider {
@@ -7,10 +14,21 @@ export class AsyncStorage extends DataProvider {
    }
 
    getCollection<T extends DataType>(
-      id: string,
-      primaryKey?: keyof T
+      schema: CollectionSchema<T>
    ): Promise<Collection<T>> {
       return Promise.reject();
+   }
+
+   getDocument<T extends DataType>(doc: Document<T>): Promise<Document<T>> {
+      //return new Promise.resolve(new Document());
+      return Promise.reject();
+   }
+
+   saveDocument<T extends DataType>(
+      doc: Document<T>,
+      options?: SetOptions<T>
+   ): Promise<void> {
+      return Promise.resolve();
    }
 
    addDocument<T extends DataType>(
@@ -18,6 +36,10 @@ export class AsyncStorage extends DataProvider {
       data: T
    ): Promise<boolean> {
       return Promise.reject();
+   }
+
+   deleteDocument<T extends DataType>(doc: Document<T>): boolean {
+      return false;
    }
 
    query<T extends DataType>(q: Query<T>): Result<T> {

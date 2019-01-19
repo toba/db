@@ -1,8 +1,18 @@
-import { Document, Query, Result, SortDirection, Operator, Boundary } from './';
-import { DataProvider, DataEntity } from './providers';
+import {
+   Document,
+   Query,
+   Result,
+   SortDirection,
+   Operator,
+   Boundary,
+   CollectionSchema
+} from './';
+import { DataProvider, DataType, DataEntity } from './providers';
 import { is } from '@toba/tools';
 
-export class Collection<T> extends DataEntity {
+export class Collection<T extends DataType> extends DataEntity {
+   schema: CollectionSchema<T>;
+
    /**
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#id
     */
@@ -15,9 +25,10 @@ export class Collection<T> extends DataEntity {
     */
    parent: Document<T> | null;
 
-   constructor(provider: DataProvider, id: string) {
+   constructor(provider: DataProvider, schema: CollectionSchema<T>) {
       super(provider);
-      this.id = id;
+      this.schema = schema;
+      this.id = schema.name;
    }
 
    /**
@@ -77,7 +88,7 @@ export class Collection<T> extends DataEntity {
     * Returns `true` if this CollectionReference is equal to the provided one.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#isEqual
     */
-   isEqual<T>(other: Collection<T>): boolean {
+   isEqual(other: Collection<T>): boolean {
       return true;
    }
 

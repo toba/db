@@ -1,23 +1,37 @@
-import { Collection } from './';
+import { Collection, Schema, Document } from './';
 import { DataProvider, DataType, DataEntity } from './providers/';
 
 export class Database extends DataEntity {
-   name: string;
-   version: number;
+   schema: Schema;
 
-   constructor(provider: DataProvider, name: string, version: number = 1) {
+   constructor(provider: DataProvider, schema: Schema) {
       super(provider);
-      this.name = name;
-      this.version = version;
+      this.schema = schema;
    }
 
    open = () => this.provider.open();
 
-   async collection<T extends DataType>(
-      id: string,
-      primaryKey?: keyof T
-   ): Promise<Collection<T>> {
-      const c = await this.provider.getCollection<T>(id, primaryKey);
-      return c;
+   /**
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore#collection
+    */
+   async collection<T extends DataType>(id: string): Promise<Collection<T>> {
+      const schema = this.schema.collections.find(c => c.name == id);
+      if (schema === undefined) {
+         return Promise.reject(
+            `Collection "${id}" does not exist in database ${this.schema.name}`
+         );
+      }
+      return this.provider.getCollection<T>(schema);
+   }
+
+   /**
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore#doc
+    */
+   async doc<T extends DataType>(
+      collectionID: string,
+      docID: string
+   ): Promise<Document<T>> {
+      const c = await this.collection<T>(collectionID);
+      return c.doc(docID);
    }
 }
