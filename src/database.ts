@@ -21,7 +21,7 @@ export class Database extends DataEntity {
             `Collection "${id}" does not exist in database ${this.schema.name}`
          );
       }
-      return this.provider.getCollection<T>(schema);
+      return new Collection<T>(this.provider, schema);
    }
 
    /**

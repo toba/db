@@ -5,7 +5,7 @@ import {
    mockSchema,
    itemSchema,
    orderSchema
-} from './__mocks__/mock-schema';
+} from '../__mocks__/mock-schema';
 import { IndexedDB } from './indexed-db';
 import { Document, Collection } from '../';
 

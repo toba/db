@@ -1,5 +1,5 @@
-import { Schema as MockSchema, CollectionSchema } from '../../';
-import { DataType } from '../base';
+import { Schema as MockSchema, CollectionSchema } from '../';
+import { DataType } from '../providers/base';
 
 export interface MockOrder extends DataType {
    itemID: string;
