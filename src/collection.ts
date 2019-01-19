@@ -28,15 +28,14 @@ export class Collection<T extends DataType> extends DataEntity {
 
    /**
     * Adds a new document to this collection with the specified data, assigning
-    * it a document ID automatically.
+    * it a document ID automatically if one is not provided in the data.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#add
     */
    add(data: T, save = false): Document<T> {
-      const doc = new Document<T>(this, data.id);
+      const doc = new Document<T>(this, data);
       if (save) {
+         // TODO: this is async -- emit event or make Promise?
          doc.set(data);
-      } else {
-         doc.setWithoutSaving(data);
       }
       return doc;
    }

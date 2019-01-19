@@ -65,16 +65,26 @@ export abstract class DataProvider extends EventEmitter<DataEvent, any> {
       id?: string
    ): Promise<Document<T>>;
 
+   /**
+    * Support `getDocument()` by normalizing the overloads.
+    */
    protected ensureDoc<T extends DataType>(
       docOrSchema: Document<T> | CollectionSchema<T>,
       id?: string
    ): Document<T> {
-      if (id !== undefined) {
-         const schema = docOrSchema as CollectionSchema<T>;
+      if (docOrSchema instanceof Document) {
+         return docOrSchema;
+      } else {
+         const schema = docOrSchema;
+         if (id === undefined) {
+            throw Error(
+               `No ID given to retrieve document from "${
+                  schema.name
+               }" collection`
+            );
+         }
          const c = new Collection<T>(this, schema);
          return new Document<T>(c, id);
-      } else {
-         return docOrSchema as Document<T>;
       }
    }
 

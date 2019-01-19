@@ -167,7 +167,8 @@ export class IndexedDB extends DataProvider {
 
    /**
     * Retrieve a single document. A new transaction will always be created to
-    * save the document so this operation can always be read-only.
+    * save the document so this operation can always be read-only. Method will
+    * return `undefined` if the document isn't found.
     */
    getDocument<T extends DataType>(doc: Document<T>): Promise<Document<T>>;
    getDocument<T extends DataType>(
@@ -184,8 +185,12 @@ export class IndexedDB extends DataProvider {
          const req: IDBRequest<T> = os.get(doc.id);
 
          req.onsuccess = () => {
-            doc.setWithoutSaving(req.result);
-            resolve(doc);
+            if (req.result === undefined) {
+               resolve(undefined);
+            } else {
+               doc.setWithoutSaving(req.result);
+               resolve(doc);
+            }
          };
 
          req.onerror = () => {

@@ -33,9 +33,23 @@ export class Document<T extends DataType> {
    /**
     * Create an empty document.
     */
-   constructor(parent: Collection<T>, id: string = ulid()) {
-      if (is.empty(id)) {
-         throw new Error('Cannot create document without an ID');
+   constructor(parent: Collection<T>, id?: string);
+   /**
+    * Create a document containing the given value.
+    */
+   constructor(parent: Collection<T>, data: T);
+   constructor(parent: Collection<T>, dataOrID: string | T) {
+      let id = ulid();
+
+      if (is.object<T>(dataOrID)) {
+         if (is.empty(dataOrID.id)) {
+            dataOrID.id = id;
+         } else {
+            id = dataOrID.id;
+         }
+         this.values = dataOrID;
+      } else if (!is.empty(dataOrID)) {
+         id = dataOrID;
       }
       this.parent = parent;
       this.id = id;
@@ -99,7 +113,7 @@ export class Document<T extends DataType> {
    setWithoutSaving(values: T) {
       if (values.id !== undefined && values.id !== this.id) {
          throw new Error(
-            `Document ID ${this.id} does not match data ID ${values.id}`
+            `Document ID "${this.id}" does not match data ID "${values.id}"`
          );
       }
       this.values = values;

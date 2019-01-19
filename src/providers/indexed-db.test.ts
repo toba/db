@@ -33,10 +33,43 @@ test('saves documents in a collection', async () => {
       description: 'favorite'
    });
 
-   expect(doc.data()).toHaveProperty('id', 'sku');
+   expect(doc.data()).toHaveProperty('id', doc.id);
 
    await idb.saveDocument(doc);
 
    const saved = await idb.getDocument(doc);
-   expect(saved).toEqual(doc);
+   expect(saved.data()).toBeDefined();
+   expect(saved.data()).toEqual(doc.data());
+});
+
+test('documents can be retrieved by ID and collection schema', async () => {
+   const doc = await itemCollection.add({
+      id: 'sku2',
+      name: 'chocolate',
+      description: 'favorite'
+   });
+
+   expect(doc.data()).toHaveProperty('id', doc.id);
+
+   await idb.saveDocument(doc);
+
+   const saved = await idb.getDocument(itemSchema, doc.id);
+   expect(saved.data()).toBeDefined();
+   expect(saved.data()).toEqual(doc.data());
+});
+
+test('documents can be deleted', async () => {
+   const doc = await orderCollection.add({
+      quantity: 5,
+      itemID: 'sku2',
+      on: new Date()
+   });
+
+   expect(doc.data()).toHaveProperty('itemID', doc.data().itemID);
+
+   await idb.saveDocument(doc);
+   await idb.deleteDocument(doc);
+
+   const saved = await idb.getDocument(doc);
+   expect(saved).toBeUndefined();
 });
