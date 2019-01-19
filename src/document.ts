@@ -4,15 +4,17 @@ import { DataType } from './providers';
 import { Collection, SetOptions } from './';
 
 /**
- * Document combines the features of a FireStore `DocumentReference` and
- * `DocumentSnapshot`.
+ * Combined features of a FireStore `DocumentReference` and `DocumentSnapshot`.
+ * The `Document` is a reference to the actual stored data which are accessed
+ * with the `data()` method.
  *
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference
  */
 export class Document<T extends DataType> {
    /**
-    * The document's identifier within its collection.
+    * The document's identifier within its collection. This is the same value
+    * contained within the data (`DataType`) itself.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#id
     */
    id: string;
@@ -22,8 +24,15 @@ export class Document<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#parent
     */
    parent: Collection<T>;
-   values?: T;
 
+   /**
+    * All data contained by the document.
+    */
+   private values?: T;
+
+   /**
+    * Create an empty document.
+    */
    constructor(parent: Collection<T>, id: string = ulid()) {
       if (is.empty(id)) {
          throw new Error('Cannot create document without an ID');
@@ -40,15 +49,15 @@ export class Document<T extends DataType> {
    }
 
    /**
-    * Retrieves all fields in the document as an Object. Returns `undefined` if
+    * Retrieve all fields in the document as an Object. Returns `undefined` if
     * the document doesn't exist.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#data
     */
    data = () => this.values;
 
    /**
-    * Retrieves the field specified by fieldPath. Returns `undefined` if the
-    * document or field doesn't exist.
+    * Retrieve the field value specified by `key`. Returns `undefined` if
+    * the `key` doesn't exist.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#get
     */
    get = <K extends keyof T>(key: K): T[K] | undefined =>
@@ -63,7 +72,7 @@ export class Document<T extends DataType> {
          : Promise.reject();
 
    /**
-    * Updates fields in the document. The update will fail if applied to a
+    * Update fields in the document. The update will fail if applied to a
     * document that does not exist.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#update
     */
@@ -71,14 +80,24 @@ export class Document<T extends DataType> {
       this.values === undefined ? Promise.reject() : this.set(values);
 
    /**
-    * Writes to the document. If the document does not exist yet, it will be
-    * created. If you pass options, the provided data can be merged into the
-    * existing document.
+    * Write to the document. If the document does not exist yet, it will be
+    * created. Options may be passed to merge new values instead of completely
+    * replacing existing values.
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#set
     */
    set(values: T, options?: SetOptions<T>): Promise<void> {
-      this.values = values;
+      this.fill(values);
       return this.parent.provider.saveDocument(this, options);
    }
 
    toString = () => JSON.stringify(this.values);
+
+   /**
+    * Fill document with data values. This method is expected to be used by data
+    * providers since it does not persist the data. It only updates the document
+    * instance.
+    */
+   fill(values: T) {
+      this.values = values;
+   }
 }

@@ -3,8 +3,20 @@ import { DataProvider, DataEvent, DataType } from './base';
 import { CollectionSchema } from '../schema';
 
 export enum AccessType {
-   ReadWrite = 'readwrite'
+   ReadWrite = 'readwrite',
+   ReadOnly = 'readonly',
+   Upgrade = 'versionchange'
 }
+
+/**
+ * All object store data extends `DataType` which specifies `id` as the primary
+ * key. By default, `id` is an automatically generated `ULID`.
+ * @see https://github.com/ulid/javascript
+ */
+const createOptions: IDBObjectStoreParameters = {
+   keyPath: 'id',
+   autoIncrement: false
+};
 
 /**
  * IndexedDB uses object stores rather than tables, and a single database can
@@ -19,12 +31,17 @@ export class IndexedDB extends DataProvider {
     * The open database. It will be `null` if the database hasn't yet been
     * opened.
     */
-   db: IDBDatabase | null = null;
+   private db: IDBDatabase | null = null;
 
    /**
     * Cache of retrieved collections.
     */
    collections: Map<string, IDBObjectStore> = new Map();
+
+   private ensureDB = () =>
+      new Promise<IDBDatabase>(resolve =>
+         this.db !== null ? resolve(this.db) : this.open()
+      );
 
    /**
     *
@@ -94,16 +111,10 @@ export class IndexedDB extends DataProvider {
    async getCollection<T extends DataType>(
       schema: CollectionSchema<T>
    ): Promise<Collection<T>> {
-      if (this.db === null) {
-         await this.open();
-      }
-      const db = this.db!;
+      const db = await this.ensureDB();
 
       if (!this.collections.has(name)) {
-         const os = db.createObjectStore(name, {
-            keyPath: 'id',
-            autoIncrement: false
-         });
+         const os = db.createObjectStore(name, createOptions);
          this.collections.set(name, os);
       }
       return new Collection(this, schema);
@@ -122,38 +133,51 @@ export class IndexedDB extends DataProvider {
    saveDocument = <T extends DataType>(
       doc: Document<T>,
       options?: SetOptions<T>
-   ): Promise<void> =>
-      new Promise((resolve, reject) => {
-         const os = this.collections.get(doc.parent.id);
+   ) =>
+      new Promise<void>(async (resolve, reject) => {
+         const db = await this.ensureDB();
+         const req: IDBRequest<IDBValidKey> = db
+            .transaction(doc.parent.id, AccessType.ReadWrite)
+            .objectStore(doc.parent.id)
+            .add(doc.data());
 
-         if (os === undefined) {
-            reject();
-            return;
-         }
+         req.onsuccess = () => resolve();
+         req.onerror = () => reject();
+      });
 
-         const req: IDBRequest = os.add(doc.toString(), doc.id);
+   deleteDocument = <T extends DataType>(doc: Document<T>) =>
+      new Promise<void>(async (resolve, reject) => {
+         const db = await this.ensureDB();
+         const req: IDBRequest = db
+            .transaction(doc.parent.id, AccessType.ReadWrite)
+            .objectStore(doc.parent.id)
+            .delete(doc.id);
+
+         req.onsuccess = () => resolve();
+         req.onerror = () => reject();
+      });
+
+   /**
+    * Retrieve a single document. A new transaction will always be created to
+    * save the document so this operation can always be read-only.
+    */
+   getDocument = <T extends DataType>(doc: Document<T>) =>
+      new Promise<Document<T>>(async (resolve, reject) => {
+         const db = await this.ensureDB();
+         const req: IDBRequest<T> = db
+            .transaction(doc.parent.id)
+            .objectStore(doc.parent.id)
+            .get(doc.id);
+
          req.onsuccess = () => {
-            resolve();
+            doc.fill(req.result);
+            resolve(doc);
          };
+
          req.onerror = () => {
             reject();
          };
       });
-
-   deleteDocument<T extends DataType>(doc: Document<T>): boolean {
-      const collectionID = doc.parent.id;
-      const os = this.collections.get(collectionID);
-
-      if (os !== undefined) {
-         os.delete(doc.id);
-         return true;
-      }
-      return false;
-   }
-
-   getDocument<T extends DataType>(doc: Document<T>): Promise<Document<T>> {
-      return Promise.resolve(doc);
-   }
 
    /**
     * key range search https://github.com/mdn/indexeddb-examples/blob/master/idbkeyrange/scripts/main.js

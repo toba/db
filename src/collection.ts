@@ -14,6 +14,7 @@ export class Collection<T extends DataType> extends DataEntity {
    schema: CollectionSchema<T>;
 
    /**
+    * User-friendly name of the collection.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#id
     */
    id: string;
@@ -36,10 +37,9 @@ export class Collection<T extends DataType> extends DataEntity {
     * it a document ID automatically.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#add
     */
-   add(data: T): Document<T> {
+   async add(data: T): Promise<Document<T>> {
       const doc = new Document(this);
-      doc.set(data);
-      // TODO: save
+      await doc.set(data);
       return doc;
    }
 

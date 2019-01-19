@@ -38,8 +38,8 @@ export class AsyncStorage extends DataProvider {
       return Promise.reject();
    }
 
-   deleteDocument<T extends DataType>(doc: Document<T>): boolean {
-      return false;
+   deleteDocument<T extends DataType>(doc: Document<T>): Promise<void> {
+      return Promise.resolve();
    }
 
    query<T extends DataType>(q: Query<T>): Result<T> {

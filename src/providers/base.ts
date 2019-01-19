@@ -67,7 +67,7 @@ export abstract class DataProvider extends EventEmitter<DataEvent, any> {
       doc: Document<T>
    ): Promise<Document<T>>;
 
-   abstract deleteDocument<T extends DataType>(doc: Document<T>): boolean;
+   abstract deleteDocument<T extends DataType>(doc: Document<T>): Promise<void>;
 
    abstract query<T extends DataType>(q: Query<T>): Result<T>;
 }

@@ -81,10 +81,7 @@ export class Query<T extends DataType> {
     * Executes the query and returns the results.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query#get
     */
-   get(): Result<T> {
-      return this.collection.provider.query(this);
-      //return new Result<T>();
-   }
+   get = (): Result<T> => this.collection.provider.query(this);
 
    /**
     * Creates a new query where the results are limited to the specified number

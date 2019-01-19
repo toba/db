@@ -1,9 +1,15 @@
+import { MimeType } from '@toba/tools';
 import { DataType } from './providers';
 
 export interface Index<T extends DataType> {
    /** Field name to be indexed. */
    field: keyof T;
    unique: boolean;
+}
+
+// TODO: this is provider-specific
+export interface Marshall<T extends DataType> {
+   field: keyof T;
 }
 
 /**
@@ -27,3 +33,5 @@ export interface CollectionSchema<T extends DataType> {
    /** Fields that should be indexed. */
    indexes?: Index<T>[];
 }
+
+
