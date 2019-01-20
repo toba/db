@@ -1,4 +1,4 @@
-import { is, mergeAll } from '@toba/tools';
+import { is, merge } from '@toba/tools';
 import { ulid } from 'ulid';
 import { DataType } from './providers';
 import { Collection, SetOptions } from './';
@@ -121,6 +121,18 @@ export class Document<T extends DataType> {
             `Document ID "${this.id}" does not match data ID "${values.id}"`
          );
       }
-      this.values = values;
+      if (this.values === undefined) {
+         this.values = values;
+      } else if (options !== undefined) {
+         if (options.merge === true) {
+            this.values = merge<T>(this.values, values);
+         } else if (is.array<keyof T>(options.mergeFields)) {
+            options.mergeFields.forEach(f => {
+               this.values[f] = values[f];
+            });
+         }
+      } else {
+         this.values = values;
+      }
    }
 }
