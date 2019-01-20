@@ -1,4 +1,3 @@
-import { MimeType } from '@toba/tools';
 import { DataType } from './providers';
 
 export interface Index<T extends DataType> {

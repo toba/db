@@ -31,11 +31,13 @@ export class Document<T extends DataType> {
    private values?: T;
 
    /**
-    * Create an empty document.
+    * Create an empty document. If no ID is provied than a ULID will be
+    * generated.
     */
    constructor(parent: Collection<T>, id?: string);
    /**
-    * Create a document containing the given value.
+    * Create a document containing the given data values. If the data don't
+    * include an ID then a ULID will be generated.
     */
    constructor(parent: Collection<T>, data: T);
    constructor(parent: Collection<T>, dataOrID: string | T) {
@@ -56,6 +58,7 @@ export class Document<T extends DataType> {
    }
 
    /**
+    * Whether the document exists in the data store.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#~exists
     */
    get exists() {

@@ -2,7 +2,10 @@ import { Collection, Schema, Document } from './';
 import { DataProvider, DataType, DataEntity } from './providers/';
 
 export class Database extends DataEntity {
-   schema: Schema;
+   /**
+    * Schema that defines the collections, their data types and indexes.
+    */
+   private schema: Schema;
 
    constructor(provider: DataProvider, schema: Schema) {
       super(provider);
