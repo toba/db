@@ -84,6 +84,11 @@ export class IndexedDB extends DataProvider {
       this.removeAll(DataEvent.Error);
    };
 
+   /**
+    * If the database exists and is the same version as requested then this
+    * event will occur immediately after opening. Otherwise `onupgradeneeded`
+    * will happen first.
+    */
    private onSuccess = (req: IDBOpenDBRequest, cb: () => void) => () => {
       this.db = req.result;
       cb();
@@ -95,22 +100,15 @@ export class IndexedDB extends DataProvider {
    };
 
    /**
-    * The database will already have the object stores from the previous version
-    * of the database so you do not have to create these object stores again.
-    * You only need to create any new object stores, or delete object stores
-    * from the previous version that are no longer needed. If you need to change
-    * an existing object store (e.g., to change the keyPath), then you must
-    * delete the old object store and create it again with the new options.
-    * (Note that this will delete the information in the object store! If you
-    * need to save that information, you should read it out and save it
-    * somewhere else before upgrading the database.)
+    * If no previous version exists, all object stores and indexes should be
+    * created in this method.
     *
-    * Trying to create an object store with a name that already exists (or
-    * trying to delete an object store with a name that does not already exist)
-    * will throw an error.
+    * If a previous version exists, it is only necessary to implement the
+    * differences. Note that an object store cannot have its `keyPath` (primary
+    * key) altered in place. Its data would need to be copied out and a new
+    * object store created to hold those data.
     *
-    * If the `onupgradeneeded` event exits successfully, the `onsuccess` handler
-    * of the open database request will then be triggered.
+    * The normal `onsuccess` event will happen when the upgrade completes.
     *
     * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Creating_or_updating_the_version_of_the_database
     */
@@ -135,6 +133,11 @@ export class IndexedDB extends DataProvider {
       return names;
    }
 
+   /**
+    * Create and return an object store transaction. If more than one object
+    * store should participate in the transaction then the transaction and its
+    * object stores should be created and retrieved step-by-step.
+    */
    private async objectStore<T extends DataType>(
       doc: Document<T>,
       access: AccessType = AccessType.ReadOnly
@@ -200,7 +203,8 @@ export class IndexedDB extends DataProvider {
    }
 
    /**
-    * key range search https://github.com/mdn/indexeddb-examples/blob/master/idbkeyrange/scripts/main.js
+    * key range search
+    * @see https://github.com/mdn/indexeddb-examples/blob/master/idbkeyrange/scripts/main.js
     */
    query<T extends DataType>(q: Query<T>): Result<T> {
       return new Result(q, []);

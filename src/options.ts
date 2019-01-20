@@ -13,12 +13,12 @@ export interface SetOptions<T extends DataType> {
     * specified in its data argument. Fields omitted from the `set()` call
     * remain untouched.
     */
-   merge: boolean;
+   merge?: boolean;
 
    /**
     * Changes the behavior of `set()` calls to only replace the specified field
     * paths. Any field path that is not specified is ignored and remains
     * untouched.
     */
-   mergeFields: (keyof T)[];
+   mergeFields?: (keyof T)[];
 }

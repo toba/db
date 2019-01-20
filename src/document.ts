@@ -1,4 +1,4 @@
-import { is } from '@toba/tools';
+import { is, mergeAll } from '@toba/tools';
 import { ulid } from 'ulid';
 import { DataType } from './providers';
 import { Collection, SetOptions } from './';
@@ -66,21 +66,21 @@ export class Document<T extends DataType> {
    }
 
    /**
-    * Retrieve all fields in the document as an Object. Returns `undefined` if
-    * the document doesn't exist.
+    * Document data (plain object) or `undefined` if the document doesn't exist.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#data
     */
    data = () => this.values;
 
    /**
-    * Retrieve the field value specified by `key`. Returns `undefined` if
-    * the `key` doesn't exist.
+    * The value of the field `key` in the document data or `undefined` if it
+    * doesn't exist.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#get
     */
    get = <K extends keyof T>(key: K): T[K] | undefined =>
       this.values !== undefined ? this.values[key] : this.values;
 
    /**
+    * Remove document data from the store.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#delete
     */
    delete = (): Promise<void> =>
@@ -89,20 +89,22 @@ export class Document<T extends DataType> {
          : Promise.reject();
 
    /**
-    * Update fields in the document. The update will fail if applied to a
-    * document that does not exist.
+    * Replace document data with new values. An error will be emitted if the
+    * document doesn't yet exist.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#update
     */
-   update = (values: T): Promise<void> =>
-      this.values === undefined ? Promise.reject() : this.set(values);
+   update = (values: Partial<T>): Promise<void> =>
+      this.values === undefined
+         ? Promise.reject()
+         : this.set(values, { merge: true });
 
    /**
-    * Save new document data in provider. If the document does not exist yet, it
-    * will be created. Options may be passed to merge new values instead of
-    * completely replacing existing values.
+    * Save new document data. The document will be created if it doesn't exist.
+    * Options may be passed to merge new values instead of completely replacing
+    * existing values.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#set
     */
-   set(values: T, options?: SetOptions<T>): Promise<void> {
+   set(values: Partial<T>, options?: SetOptions<T>): Promise<void> {
       this.setWithoutSaving(values);
       return this.parent.provider.saveDocument(this, options);
    }
@@ -113,7 +115,7 @@ export class Document<T extends DataType> {
     * Set document values without saving them. This will typically only be used
     * by data providers.
     */
-   setWithoutSaving(values: T) {
+   setWithoutSaving(values: Partial<T>, options?: SetOptions<T>) {
       if (values.id !== undefined && values.id !== this.id) {
          throw new Error(
             `Document ID "${this.id}" does not match data ID "${values.id}"`
