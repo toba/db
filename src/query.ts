@@ -33,10 +33,10 @@ export interface Sort<T extends DataType> {
  */
 export class Query<T extends DataType> {
    private collection: Collection<T>;
-   private max: number = 0;
-   private sort: Sort<T> = {};
-   private match: Match<T, keyof T> = {};
-   private range: Range<T> = {};
+   max: number = 0;
+   sort: Sort<T> = {};
+   match: Match<T, keyof T> = {};
+   range: Range<T> = {};
 
    constructor(collection: Collection<T>) {
       this.collection = collection;

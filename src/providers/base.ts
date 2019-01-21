@@ -4,7 +4,6 @@ import {
    Document,
    Result,
    Query,
-   SetOptions,
    Schema,
    CollectionSchema
 } from '../';

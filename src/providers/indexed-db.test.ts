@@ -7,7 +7,7 @@ import {
    orderSchema
 } from '../__mocks__/mock-schema';
 import { IndexedDB } from './indexed-db';
-import { Document, Collection } from '../';
+import { Collection } from '../';
 
 let idb: IndexedDB;
 let itemCollection: Collection<MockItem>;
@@ -24,6 +24,14 @@ test('creates a database with collections', async () => {
    const created = mockSchema.collections.map(c => c.name).sort();
 
    expect(names.sort()).toEqual(created);
+});
+
+test('creates indexes', async () => {
+   const names = await idb.indexNames(itemSchema);
+   const indexes = itemSchema.indexes!.map(c => c.field).sort();
+
+   expect(names).toHaveLength(1);
+   expect(names.sort()).toEqual(indexes);
 });
 
 test('saves documents in a collection', async () => {

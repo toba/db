@@ -1,13 +1,7 @@
-import {
-   Collection,
-   Document,
-   Query,
-   Result,
-   SetOptions,
-   CollectionSchema
-} from '../';
+import { Document, Query, Result, CollectionSchema } from '../';
 import { DataProvider, DataEvent, DataType } from './base';
 import { is } from '@toba/tools';
+import { Collection } from '../collection';
 
 export enum AccessType {
    ReadWrite = 'readwrite',
@@ -25,6 +19,14 @@ const createOptions: IDBObjectStoreParameters = {
    autoIncrement: false
 };
 
+function domStringListToArray(domStrings: DOMStringList): string[] {
+   const list: string[] = [];
+   for (let i = 0; i < domStrings.length; i++) {
+      list.push(domStrings.item(i)!);
+   }
+   return list;
+}
+
 /**
  * IndexedDB uses object stores rather than tables, and a single database can
  * contain any number of object stores. Whenever a value is stored in an object
@@ -39,11 +41,6 @@ export class IndexedDB extends DataProvider {
     * opened.
     */
    private db: IDBDatabase | null = null;
-
-   /**
-    * Cache of retrieved collections.
-    */
-   collections: Map<string, IDBObjectStore> = new Map();
 
    private ensureDB = (): Promise<IDBDatabase> =>
       this.db !== null
@@ -132,25 +129,45 @@ export class IndexedDB extends DataProvider {
     */
    async collectionNames(): Promise<string[]> {
       const db = await this.ensureDB();
-      const names: string[] = [];
-
-      for (let i = 0; i < db.objectStoreNames.length; i++) {
-         names.push(db.objectStoreNames.item(i)!);
-      }
-      return names;
+      return domStringListToArray(db.objectStoreNames);
    }
 
+   // overloads
+   async indexNames(collectionID: string): Promise<string[]>;
+   async indexNames<T extends DataType>(
+      schema: CollectionSchema<T>
+   ): Promise<string[]>;
+   /**
+    * Names of all indexes in a collection.
+    */
+   async indexNames<T extends DataType>(
+      schemaOrID: string | CollectionSchema<T>
+   ): Promise<string[]> {
+      const id: string = is.text(schemaOrID) ? schemaOrID : schemaOrID.name;
+      const os = await this.objectStore(id);
+      return domStringListToArray(os.indexNames);
+   }
+
+   // overloads
+   private async objectStore(
+      id: string,
+      access?: AccessType
+   ): Promise<IDBObjectStore>;
+   private async objectStore<T extends DataType>(
+      doc: Document<T>,
+      access?: AccessType
+   ): Promise<IDBObjectStore>;
    /**
     * Create and return an object store transaction. If more than one object
     * store should participate in the transaction then the transaction and its
     * object stores should be created and retrieved step-by-step.
     */
    private async objectStore<T extends DataType>(
-      doc: Document<T>,
+      docOrID: Document<T> | string,
       access: AccessType = AccessType.ReadOnly
    ): Promise<IDBObjectStore> {
       const db = await this.ensureDB();
-      const id = doc.parent.schema.name;
+      const id = is.text(docOrID) ? docOrID : docOrID.parent.schema.name;
       return db.transaction(id, access).objectStore(id);
    }
 
@@ -172,16 +189,17 @@ export class IndexedDB extends DataProvider {
          req.onerror = () => reject();
       });
 
-   /**
-    * Retrieve a single document. A new transaction will always be created to
-    * save the document so this operation can always be read-only. Method will
-    * return `undefined` if the document isn't found.
-    */
+   // overloads
    getDocument<T extends DataType>(doc: Document<T>): Promise<Document<T>>;
    getDocument<T extends DataType>(
       collection: CollectionSchema<T>,
       id: string
    ): Promise<Document<T>>;
+   /**
+    * Retrieve a single document. A new transaction will always be created to
+    * save the document so this operation can always be read-only. Method will
+    * return `undefined` if the document isn't found.
+    */
    getDocument<T extends DataType>(
       docOrSchema: Document<T> | CollectionSchema<T>,
       id?: string
