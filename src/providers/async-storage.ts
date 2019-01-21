@@ -24,10 +24,7 @@ export class AsyncStorage extends DataProvider {
       return Promise.reject();
    }
 
-   saveDocument<T extends DataType>(
-      doc: Document<T>,
-      options?: SetOptions<T>
-   ): Promise<void> {
+   saveDocument<T extends DataType>(doc: Document<T>): Promise<void> {
       return Promise.resolve();
    }
 

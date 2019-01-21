@@ -7,6 +7,7 @@ import {
    CollectionSchema
 } from '../';
 import { DataProvider, DataEvent, DataType } from './base';
+import { is } from '@toba/tools';
 
 export enum AccessType {
    ReadWrite = 'readwrite',
@@ -116,7 +117,13 @@ export class IndexedDB extends DataProvider {
       const db = req.result;
 
       this.schema.collections.forEach(c => {
-         db.createObjectStore(c.name, createOptions);
+         const os = db.createObjectStore(c.name, createOptions);
+
+         if (is.array(c.indexes)) {
+            c.indexes.forEach(i => {
+               os.createIndex(i.field, i.field, { unique: i.unique });
+            });
+         }
       });
    };
 
@@ -147,10 +154,7 @@ export class IndexedDB extends DataProvider {
       return db.transaction(id, access).objectStore(id);
    }
 
-   saveDocument = <T extends DataType>(
-      doc: Document<T>,
-      options?: SetOptions<T>
-   ) =>
+   saveDocument = <T extends DataType>(doc: Document<T>) =>
       new Promise<void>(async (resolve, reject) => {
          const os = await this.objectStore(doc, AccessType.ReadWrite);
          const req: IDBRequest<IDBValidKey> = os.add(doc.data());

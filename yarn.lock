@@ -711,9 +711,9 @@
   integrity sha512-x/OF9qJ81eft0GeXmk3PdwH5Bj/SW78aa3IFYkROQMe5zN6j4/QHLuCJkTTxhmyn5vQACR1xb2S4sAgMUgh81g==
 
 "@toba/tools@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@toba/tools/-/tools-6.0.0.tgz#8434f83cba7dbff1e183dfabf082e7fedee592cb"
-  integrity sha512-h9/ywHsphr8DxjR7BanWz2ch08k460asvicVxF8GfcV/NVgM4zN8BpJVIxbaDFFcZKjPOwhJVCxMJWnwmNRETA==
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@toba/tools/-/tools-6.0.1.tgz#7ff6b9c35feeb20f773a778792efa3577a3780ba"
+  integrity sha512-StL9T5M2n1kuZ8U+fP5gEGtTYyKIxpp8eHu7YiadcuCGKp8SZQAxB3ZHbqM9Tqkof+1LDoUkd3SX7sJBgi6k2g==
 
 "@types/jest@^23.3.0":
   version "23.3.13"
@@ -1983,9 +1983,9 @@ diff@^3.2.0:
   integrity sha512-A46qtFgd+g7pDZinpnwiRJtxbC1hpgf0uzP3iG89scHk0AUC7A1TGxf5OiiOUv/JMZR8GOt8hL900hV0bOy5xA==
 
 dir-glob@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/dir-glob/-/dir-glob-2.2.1.tgz#ce8413234ffe8452b76b7741c32f116cf2a7b1a7"
-  integrity sha512-UN6X6XwRjllabfRhBdkVSo63uurJ8nSvMGrwl94EYVz6g+exhTV+yVSYk5VC/xl3MBFBTtC0J20uFKce4Brrng==
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/dir-glob/-/dir-glob-2.2.2.tgz#fa09f0694153c8918b18ba0deafae94769fc50c4"
+  integrity sha512-f9LBi5QWzIW3I6e//uxZoLBlUt9kcp66qo0sSCxL6YZKc75R1c4MFCoe/LaZiBGmgujvQdxc5Bn3QhfyvK5Hsw==
   dependencies:
     path-type "^3.0.0"
 

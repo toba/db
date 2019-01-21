@@ -105,8 +105,8 @@ export class Document<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#set
     */
    set(values: Partial<T>, options?: SetOptions<T>): Promise<void> {
-      this.setWithoutSaving(values);
-      return this.parent.provider.saveDocument(this, options);
+      this.setWithoutSaving(values, options);
+      return this.parent.provider.saveDocument(this);
    }
 
    toString = () => JSON.stringify(this.values);
@@ -115,24 +115,28 @@ export class Document<T extends DataType> {
     * Set document values without saving them. This will typically only be used
     * by data providers.
     */
-   setWithoutSaving(values: Partial<T>, options?: SetOptions<T>) {
+   setWithoutSaving(values: T | Partial<T>, options?: SetOptions<T>) {
       if (values.id !== undefined && values.id !== this.id) {
          throw new Error(
             `Document ID "${this.id}" does not match data ID "${values.id}"`
          );
       }
-      if (this.values === undefined) {
-         this.values = values;
+
+      if (this.values === undefined || options === undefined) {
+         // TODO: way to do this without type coercion?
+         this.values = values as T;
       } else if (options !== undefined) {
-         if (options.merge === true) {
-            this.values = merge<T>(this.values, values);
-         } else if (is.array<keyof T>(options.mergeFields)) {
+         if (is.array<keyof T>(options.mergeFields)) {
+            // only merge the listed fields
+            const selected: Partial<T> = {};
             options.mergeFields.forEach(f => {
-               this.values[f] = values[f];
+               selected[f] = values[f] as T[keyof T] | undefined;
             });
+            this.values = merge(this.values, selected);
+         } else if (options.merge === true) {
+            // merge given values but otherwise leave existing data as is
+            this.values = merge(this.values, values);
          }
-      } else {
-         this.values = values;
       }
    }
 }

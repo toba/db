@@ -9,16 +9,14 @@ import { DataType } from './providers';
  */
 export interface SetOptions<T extends DataType> {
    /**
-    * Changes the behavior of a `set()` call to only replace the values
-    * specified in its data argument. Fields omitted from the `set()` call
-    * remain untouched.
+    * If `true` then only document values with new set values will be replaced.
+    * Otherwise, all document data will be replaced with the new values.
     */
    merge?: boolean;
 
    /**
-    * Changes the behavior of `set()` calls to only replace the specified field
-    * paths. Any field path that is not specified is ignored and remains
-    * untouched.
+    * Specify field names to have only those specific fields replaced by the
+    * new values.
     */
    mergeFields?: (keyof T)[];
 }

@@ -9,7 +9,6 @@ import {
 } from './';
 import { DataProvider, DataType, DataEntity } from './providers';
 import { is } from '@toba/tools';
-import { ulid } from 'ulid';
 
 export class Collection<T extends DataType> extends DataEntity {
    schema: CollectionSchema<T>;

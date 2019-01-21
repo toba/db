@@ -6,18 +6,7 @@ export enum SortDirection {
    Descending
 }
 
-export enum Operator {
-   None,
-   GreaterThan,
-   EqualOrGreater,
-   LessThan,
-   EqualOrLess,
-   Equal,
-   /**
-    * Match documents where a field is an array and contains a specified value.
-    */
-   ArrayContains
-}
+type Operator = '>' | '>=' | '<' | '<=' | '==' | 'in';
 
 export type Boundary<T extends DataType> = Document<T> | Partial<T>;
 

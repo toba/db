@@ -44,10 +44,7 @@ export abstract class DataProvider extends EventEmitter<DataEvent, any> {
 
    abstract collectionNames(): Promise<string[]>;
 
-   abstract saveDocument<T extends DataType>(
-      doc: Document<T>,
-      options?: SetOptions<T>
-   ): Promise<void>;
+   abstract saveDocument<T extends DataType>(doc: Document<T>): Promise<void>;
 
    /**
     * Retrieve a single document. A new transaction will always be created to
