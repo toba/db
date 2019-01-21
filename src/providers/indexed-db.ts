@@ -227,6 +227,9 @@ export class IndexedDB extends DataProvider {
    /**
     * key range search
     * @see https://github.com/mdn/indexeddb-examples/blob/master/idbkeyrange/scripts/main.js
+    *
+    * compound query example
+    * @see https://stackoverflow.com/a/15625231/6823622
     */
    query<T extends DataType>(q: Query<T>): Result<T> {
       return new Result(q, []);
