@@ -5,6 +5,9 @@ import { DataType } from './providers';
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.QuerySnapshot
  */
 export class Result<T extends DataType> {
+   /**
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.QuerySnapshot#query
+    */
    private query: Query<T>;
    private matches: Document<T>[];
 
@@ -13,17 +16,26 @@ export class Result<T extends DataType> {
       this.matches = matches;
    }
 
+   /**
+    * Array of all documents in the result.
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.QuerySnapshot#docs
+    */
    docs(): Document<T>[] {
       return this.matches;
    }
 
    /**
     * True if there are no documents in the result.
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.QuerySnapshot#empty
     */
    get empty(): boolean {
       return this.matches.length === 0;
    }
 
+   /**
+    * Number of matched documents.
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.QuerySnapshot#size
+    */
    get size(): number {
       return this.matches.length;
    }
