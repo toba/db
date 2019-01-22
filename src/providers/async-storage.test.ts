@@ -8,7 +8,7 @@ import {
    orderSchema
 } from '../__mocks__/mock-schema';
 import { MockAsyncStorage } from './__mocks__/mock-async-storage';
-import { AsyncStorageProvider } from './async-storage';
+import { AsyncStorageProvider, keyParts, Key } from './async-storage';
 import { Collection } from '../';
 
 let asp: AsyncStorageProvider;
@@ -28,6 +28,18 @@ beforeEach(() => {
 
 afterAll(() => {
    jest.unmock('AsyncStorage');
+});
+
+test('parses compound keys', () => {
+   const keys = new Map<string, Key>([
+      [
+         'one::two::three',
+         { database: 'one', collection: 'two', document: 'three' }
+      ]
+   ]);
+   keys.forEach((value, key) => {
+      expect(keyParts(key)).toEqual(value);
+   });
 });
 
 test('saves documents in a collection', async () => {
@@ -77,4 +89,30 @@ test('documents can be deleted', async () => {
 
    const saved = await asp.getDocument(doc);
    expect(saved).toBeUndefined();
+});
+
+test('retrieves collection names', async () => {
+   // AsyncProvider won't have collections until documents are saved
+   await itemCollection.add(
+      {
+         id: 'sku2',
+         price: 0,
+         name: 'chocolate',
+         description: 'favorite'
+      },
+      true
+   );
+   await orderCollection.add(
+      {
+         quantity: 5,
+         itemID: 'sku2',
+         on: new Date()
+      },
+      true
+   );
+
+   const names = await asp.collectionNames();
+   const created = mockSchema.collections.map(c => c.name).sort();
+
+   expect(names.sort()).toEqual(created);
 });

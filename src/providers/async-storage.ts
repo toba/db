@@ -1,6 +1,26 @@
+import { addUnique } from '@toba/tools';
 import { AsyncStorage } from 'react-native';
 import { Query, Result, Document, CollectionSchema } from '../';
 import { DataProvider, DataType } from './base';
+
+const keyPattern = /^([A-Z0-9\-]{2,})::([A-Z0-9\-]{2,})::([A-Z0-9\-]{2,})$/i;
+
+export interface Key {
+   database: string;
+   collection: string;
+   document: string;
+}
+
+export function keyParts(key: string): Key | null {
+   const parts = keyPattern.exec(key);
+   return parts == null
+      ? null
+      : {
+           database: parts[1],
+           collection: parts[2],
+           document: parts[3]
+        };
+}
 
 /**
  * `AsyncStorage` is a simple key-value data store. Documents will be stored
@@ -28,7 +48,13 @@ export class AsyncStorageProvider extends DataProvider {
 
    async collectionNames() {
       const keys = await AsyncStorage.getAllKeys();
-      return keys;
+      return keys.sort().reduce((names: string[], key: string) => {
+         const parts = keyParts(key);
+         if (parts !== null) {
+            addUnique(names, parts.collection);
+         }
+         return names;
+      }, []);
    }
 
    // overloads
