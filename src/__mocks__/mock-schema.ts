@@ -7,10 +7,10 @@ export interface MockOrder extends DataType {
    quantity: number;
 }
 
-export interface MockItem {
-   id: string;
+export interface MockItem extends DataType {
    name: string;
    description: string;
+   price: number;
 }
 
 export const itemSchema: CollectionSchema<MockItem> = {

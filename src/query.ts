@@ -6,7 +6,7 @@ export enum SortDirection {
    Descending
 }
 
-type Operator = '>' | '>=' | '<' | '<=' | '==' | 'in';
+export type Operator = '>' | '>=' | '<' | '<=' | '==' | 'contains';
 
 export type Boundary<T extends DataType> = Document<T> | Partial<T>;
 
@@ -38,6 +38,9 @@ export class Query<T extends DataType> {
    match: Match<T, keyof T> = {};
    range: Range<T> = {};
 
+   /**
+    * @param collection Collection the query will run against
+    */
    constructor(collection: Collection<T>) {
       this.collection = collection;
    }

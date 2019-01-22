@@ -1,5 +1,6 @@
 import { Collection, Schema, Document } from './';
 import { DataProvider, DataType, DataEntity } from './providers/';
+import { CollectionSchema } from './schema';
 
 export class Database extends DataEntity {
    /**
@@ -14,6 +15,14 @@ export class Database extends DataEntity {
 
    open = () => this.provider.open();
 
+   get name() {
+      return this.schema.name;
+   }
+
+   get version() {
+      return this.schema.version;
+   }
+
    /**
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore#collection
     */
@@ -21,10 +30,12 @@ export class Database extends DataEntity {
       const schema = this.schema.collections.find(c => c.name == id);
       if (schema === undefined) {
          return Promise.reject(
-            `Collection "${id}" does not exist in database ${this.schema.name}`
+            `Collection "${id}" does not exist in database ${this.name}`
          );
       }
-      return new Collection<T>(this.provider, schema);
+      // type coercion is needed because the type-specific schemas in
+      // .collections are all stored as CollectionSchema<DataType>
+      return new Collection<T>(this.provider, schema as CollectionSchema<T>);
    }
 
    /**

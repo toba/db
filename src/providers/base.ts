@@ -12,12 +12,21 @@ import {
  * Type of data stored in a `Document`.
  */
 export type DataType = {
+   [key: string]: any;
    /**
     * The primary document key. If not supplied, a ULID will be generated.
     * @see https://github.com/ulid/javascript
     */
    id?: string;
 };
+
+/**
+ * `DataType` keys other than the `id`.
+ */
+export type ExcludeID<T extends DataType> = keyof Pick<
+   T,
+   Exclude<keyof T, 'id'>
+>;
 
 /**
  * Event emitted by a `DataProvider`.
@@ -30,11 +39,23 @@ export enum DataEvent {
  * Methods to access and manage data in a particular storage system.
  */
 export abstract class DataProvider extends EventEmitter<DataEvent, any> {
-   protected schema: Schema;
+   private schema: Schema;
 
    constructor(schema: Schema) {
       super();
       this.schema = schema;
+   }
+
+   protected get name() {
+      return this.schema.name;
+   }
+
+   protected get version() {
+      return this.schema.version;
+   }
+
+   protected get collectionSchemas() {
+      return this.schema.collections;
    }
 
    abstract open(): Promise<void>;

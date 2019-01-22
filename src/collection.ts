@@ -1,7 +1,6 @@
 import {
    Document,
    Query,
-   Result,
    SortDirection,
    Operator,
    Boundary,
@@ -25,18 +24,25 @@ export class Collection<T extends DataType> extends DataEntity {
       this.schema = schema;
    }
 
+   get id() {
+      return this.schema.name;
+   }
+
+   // overloads necessary to work around conditional type limitations
+   // https://stackoverflow.com/a/54027165
+   add<S extends boolean>(data: T): Document<T>;
+   add<S extends boolean>(
+      data: T,
+      save: S
+   ): S extends true ? Promise<Document<T>> : Document<T>;
    /**
     * Adds a new document to this collection with the specified data, assigning
     * it a document ID automatically if one is not provided in the data.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#add
     */
-   add(data: T, save = false): Document<T> {
+   add(data: T, save = false): Promise<Document<T>> | Document<T> {
       const doc = new Document<T>(this, data);
-      if (save) {
-         // TODO: this is async -- emit event or make Promise?
-         doc.set(data);
-      }
-      return doc;
+      return save ? doc.set(data).then(() => doc) : doc;
    }
 
    /**
@@ -81,12 +87,11 @@ export class Collection<T extends DataType> extends DataEntity {
    // }
 
    /**
-    * Returns `true` if this CollectionReference is equal to the provided one.
+    * Returns `true` if this `Collection` is equal to the provided one.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#isEqual
     */
-   isEqual(other: Collection<T>): boolean {
-      return true;
-   }
+   isEqual = (other: Collection<T>): boolean =>
+      this.id == other.id && this.schema.name == other.schema.name;
 
    /**
     * Creates a new query where the results are limited to the specified number

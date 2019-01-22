@@ -1,7 +1,6 @@
-import { Document, Query, Result, CollectionSchema } from '../';
-import { DataProvider, DataEvent, DataType } from './base';
 import { is } from '@toba/tools';
-import { Collection } from '../collection';
+import { Document, Query, Result, CollectionSchema, indexName } from '../';
+import { DataProvider, DataEvent, DataType } from './base';
 
 export enum AccessType {
    ReadWrite = 'readwrite',
@@ -59,7 +58,7 @@ export class IndexedDB extends DataProvider {
     */
    open = () =>
       new Promise<void>((resolve, reject) => {
-         const req = indexedDB.open(this.schema.name, this.schema.version);
+         const req = indexedDB.open(this.name, this.version);
 
          req.onerror = this.onError(req, reject);
          req.onsuccess = this.onSuccess(req, resolve);
@@ -75,9 +74,12 @@ export class IndexedDB extends DataProvider {
 
    private onError = (
       req: IDBOpenDBRequest,
-      cb: (er: DOMException | null) => void
+      cb: (er: DOMException | null) => void,
+      closeDatabase: boolean = true
    ) => () => {
-      this.db = null;
+      if (closeDatabase) {
+         this.close();
+      }
       cb(req.error);
       this.removeAll(DataEvent.Error);
    };
@@ -113,12 +115,17 @@ export class IndexedDB extends DataProvider {
    private upgrade = (req: IDBOpenDBRequest) => (ev: IDBVersionChangeEvent) => {
       const db = req.result;
 
-      this.schema.collections.forEach(c => {
+      this.collectionSchemas.forEach(c => {
          const os = db.createObjectStore(c.name, createOptions);
 
          if (is.array(c.indexes)) {
             c.indexes.forEach(i => {
-               os.createIndex(i.field, i.field, { unique: i.unique });
+               // the index field is defined as keyOf DataType which requires
+               // string keys, yet still resolves as number | string, hence
+               // the coercion
+               os.createIndex(indexName(i), i.field as string | string[], {
+                  unique: i.unique
+               });
             });
          }
       });
@@ -167,7 +174,7 @@ export class IndexedDB extends DataProvider {
       access: AccessType = AccessType.ReadOnly
    ): Promise<IDBObjectStore> {
       const db = await this.ensureDB();
-      const id = is.text(docOrID) ? docOrID : docOrID.parent.schema.name;
+      const id = is.text(docOrID) ? docOrID : docOrID.parent.id;
       return db.transaction(id, access).objectStore(id);
    }
 

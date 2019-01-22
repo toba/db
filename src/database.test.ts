@@ -1,43 +1,43 @@
 import '@toba/test';
-import { Schema, CollectionSchema } from './';
+import { mockSchema, itemSchema, MockItem } from './__mocks__/mock-schema';
+import { Database } from './';
+import { IndexedDB } from './providers';
 
-interface Order {
-   id: string;
-   quantity: number;
-}
+const idb = new IndexedDB(mockSchema);
 
-interface Item {
-   id: string;
-   name: string;
-   descreiption: string;
-}
+test('retrieves collection references', async () => {
+   const db = new Database(idb, mockSchema);
+   const c = await db.collection(itemSchema.name);
 
-const itemSchema: CollectionSchema<Item> = {
-   name: 'items',
-   indexes: [
-      {
-         field: 'name',
-         unique: true
-      }
-   ]
-};
+   expect(c).toBeDefined();
+   expect(c.id).toBe(itemSchema.name);
+});
 
-const orderSchema: CollectionSchema<Order> = {
-   name: 'orders',
-   indexes: [
-      {
-         field: 'quantity',
-         unique: false
-      }
-   ]
-};
+test('throws error if trying to access non-existent collection', async () => {
+   const db = new Database(idb, mockSchema);
+   const badName = 'bad name';
+   let err: Error | undefined;
 
-const schema: Schema = {
-   name: 'mock',
-   version: 1,
-   collections: [orderSchema, itemSchema]
-};
+   try {
+      await db.collection(badName);
+   } catch (e) {
+      err = e;
+   }
+   expect(err).toBeDefined();
+   expect(err).toBe(
+      `Collection "${badName}" does not exist in database ${db.name}`
+   );
+});
 
-test('dummy', () => {
-   expect('three').toBe('three');
+test('retrieves document references', async () => {
+   const db = new Database(idb, mockSchema);
+   const c = await db.collection<MockItem>(itemSchema.name);
+   const doc = await c.add(
+      { id: 'sku', name: 'name', description: 'desc' },
+      true
+   );
+   const loaded = await db.doc<MockItem>(c.id, doc.id);
+
+   expect(loaded).toBeDefined();
+   expect(loaded.data()).toEqual(doc.data());
 });

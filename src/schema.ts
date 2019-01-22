@@ -1,9 +1,21 @@
-import { DataType } from './providers';
+import { DataType, ExcludeID } from './providers';
+import { is } from '@toba/tools';
+
+/**
+ * Idempotent index name used to store and look-up the index in the data
+ * provider.
+ */
+export const indexName = <T extends DataType>(index: Index<T>): string =>
+   is.array(index.field)
+      ? index.field.sort().join('-')
+      : (index.field as string);
 
 export interface Index<T extends DataType> {
-   /** Field name to be indexed. */
-   field: keyof T;
-   unique: boolean;
+   /**
+    * Field name or names to be indexed other than `id`.
+    */
+   field: ExcludeID<T> | (ExcludeID<T>[]);
+   unique?: boolean;
 }
 
 // TODO: this is provider-specific

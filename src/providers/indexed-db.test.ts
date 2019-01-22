@@ -37,6 +37,7 @@ test('creates indexes', async () => {
 test('saves documents in a collection', async () => {
    const doc = await itemCollection.add({
       id: 'sku',
+      price: 0,
       name: 'peanut butter',
       description: 'favorite'
    });
@@ -53,6 +54,7 @@ test('saves documents in a collection', async () => {
 test('documents can be retrieved by ID and collection schema', async () => {
    const doc = await itemCollection.add({
       id: 'sku2',
+      price: 0,
       name: 'chocolate',
       description: 'favorite'
    });

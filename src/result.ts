@@ -1,3 +1,4 @@
+import { isEqualList } from '@toba/tools';
 import { Document, Query } from './';
 import { DataType } from './providers';
 
@@ -41,6 +42,9 @@ export class Result<T extends DataType> {
    }
 
    isEqual(other: Result<T>): boolean {
-      return false;
+      const docIDs = this.matches.map(d => d.id);
+      const others = other.matches.map(d => d.id);
+
+      return isEqualList(docIDs, others);
    }
 }
