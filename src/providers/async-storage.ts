@@ -1,18 +1,34 @@
 import { AsyncStorage } from 'react-native';
-import { Collection, Query, Result, Document, CollectionSchema } from '../';
+import { Query, Result, Document, CollectionSchema } from '../';
 import { DataProvider, DataType } from './base';
 
+/**
+ * `AsyncStorage` is a simple key-value data store. Documents will be stored
+ * with a key that indicates their parent collection and database:
+ * `<db-name>::<collection-name>::<doc-id>`.
+ */
 export class AsyncStorageProvider extends DataProvider {
-   private db: AsyncStorage;
-
+   /**
+    * `AsyncStorage` is globally available on React Native so `open()` is a
+    * no-op.
+    */
    open(): Promise<void> {
       return Promise.resolve();
    }
 
-   getCollection<T extends DataType>(
-      schema: CollectionSchema<T>
-   ): Promise<Collection<T>> {
-      return Promise.reject();
+   close() {
+      return;
+   }
+
+   /**
+    * Retrieve key for a document.
+    */
+   private docKey = <T extends DataType>(doc: Document<T>) =>
+      `${this.name}::${doc.parent.id}::${doc.id}`;
+
+   async collectionNames() {
+      const keys = await AsyncStorage.getAllKeys();
+      return keys;
    }
 
    // overloads
@@ -22,47 +38,30 @@ export class AsyncStorageProvider extends DataProvider {
       id: string
    ): Promise<Document<T>>;
    /**
-    * Retrieve a single document. A new transaction will always be created to
-    * save the document so this operation can always be read-only. Method will
-    * return `undefined` if the document isn't found.
+    * Retrieve a single document. Method will return `undefined` if the document
+    * isn't found.
     */
-   getDocument<T extends DataType>(
+   async getDocument<T extends DataType>(
       docOrSchema: Document<T> | CollectionSchema<T>,
       id?: string
    ) {
-      return new Promise<Document<T>>(async (resolve, reject) => {
-         const doc = this.ensureDoc(docOrSchema, id);
-         const os = await this.objectStore(doc);
-         const req: IDBRequest<T> = os.get(doc.id);
+      const doc = this.ensureDoc(docOrSchema, id);
+      const key = this.docKey(doc);
+      const value = await AsyncStorage.getItem(key);
 
-         req.onsuccess = () => {
-            if (req.result === undefined) {
-               resolve(undefined);
-            } else {
-               doc.setWithoutSaving(req.result);
-               resolve(doc);
-            }
-         };
-
-         req.onerror = () => {
-            reject();
-         };
-      });
+      return value === null
+         ? undefined
+         : doc.setWithoutSaving(JSON.parse(value));
    }
 
    saveDocument<T extends DataType>(doc: Document<T>): Promise<void> {
-      return Promise.resolve();
-   }
-
-   addDocument<T extends DataType>(
-      collectionID: string,
-      data: T
-   ): Promise<boolean> {
-      return Promise.reject();
+      const key = this.docKey(doc);
+      return AsyncStorage.setItem(key, doc.toString());
    }
 
    deleteDocument<T extends DataType>(doc: Document<T>): Promise<void> {
-      return Promise.resolve();
+      const key = this.docKey(doc);
+      return AsyncStorage.removeItem(key);
    }
 
    query<T extends DataType>(q: Query<T>): Result<T> {
