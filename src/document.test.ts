@@ -1,6 +1,5 @@
 import '@toba/test';
 import {
-   MockItem,
    MockOrder,
    mockSchema,
    itemSchema,
@@ -13,6 +12,14 @@ const idb = new IndexedDB(mockSchema);
 const items = new Collection(idb, itemSchema);
 const orders = new Collection(idb, orderSchema);
 
+const mockDoc = (id = 'sku', price = 1.5) =>
+   new Document(items, {
+      id,
+      price,
+      name: 'name',
+      description: 'desc'
+   });
+
 test('generates a ULID ID if none provided', () => {
    const doc = new Document(items);
    expect(doc.id).toBeDefined();
@@ -20,17 +27,12 @@ test('generates a ULID ID if none provided', () => {
 });
 
 test('uses ID parameter if provided', () => {
-   const doc = new Document(items, 'some-id');
+   const doc = mockDoc('some-id');
    expect(doc.id).toBe('some-id');
 });
 
 test('uses data ID if provided', () => {
-   const data: MockItem = {
-      id: 'sku',
-      name: 'name',
-      description: 'desc'
-   };
-   const doc = new Document(items, data);
+   const doc = mockDoc();
    expect(doc.id).toBe('sku');
 });
 
@@ -43,4 +45,21 @@ test('generates ULID if data provided without ID', () => {
    const doc = new Document(orders, data);
    expect(doc.id).toBeDefined();
    expect(doc.id.length).toBe(26);
+});
+
+test('retrieves individual field value', () => {
+   const doc = mockDoc();
+   expect(doc.get('id')).toBe('sku');
+   expect(doc.get('price')).toBe(1.5);
+});
+
+test('can be exported as JSON string', () => {
+   const doc = mockDoc();
+   const json = JSON.stringify({
+      id: 'sku',
+      price: 1.5,
+      name: 'name',
+      description: 'desc'
+   });
+   expect(doc.toString()).toBe(json);
 });

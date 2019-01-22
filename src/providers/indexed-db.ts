@@ -112,7 +112,7 @@ export class IndexedDB extends DataProvider {
     *
     * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Creating_or_updating_the_version_of_the_database
     */
-   private upgrade = (req: IDBOpenDBRequest) => (ev: IDBVersionChangeEvent) => {
+   private upgrade = (req: IDBOpenDBRequest) => (_ev: IDBVersionChangeEvent) => {
       const db = req.result;
 
       this.collectionSchemas.forEach(c => {

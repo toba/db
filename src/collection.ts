@@ -17,7 +17,7 @@ export class Collection<T extends DataType> extends DataEntity {
     * this isn't a subcollection, the reference is null.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#parent
     */
-   parent: Document<T> | null;
+   parent: Document<T> | null; // TODO: implement or disable doc parents
 
    constructor(provider: DataProvider, schema: CollectionSchema<T>) {
       super(provider);
