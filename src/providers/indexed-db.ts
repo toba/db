@@ -34,7 +34,7 @@ function domStringListToArray(domStrings: DOMStringList): string[] {
  * a key generator.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
  */
-export class IndexedDB extends DataProvider {
+export class IndexedDbProvider extends DataProvider {
    /**
     * The open database. It will be `null` if the database hasn't yet been
     * opened.

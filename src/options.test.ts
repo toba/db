@@ -1,15 +1,16 @@
 import '@toba/test';
 import { MockItem, mockSchema, itemSchema } from './__mocks__/mock-schema';
 import { Document, Collection } from './';
-import { IndexedDB } from './providers';
+import { IndexedDbProvider } from './providers';
 
-const idb = new IndexedDB(mockSchema);
+const idb = new IndexedDbProvider(mockSchema);
 const items = new Collection<MockItem>(idb, itemSchema);
 const mockDoc = () =>
    new Document<MockItem>(items, {
       id: 'sku',
       name: 'name',
-      description: 'desc'
+      description: 'desc',
+      price: 3
    });
 
 test('#set replaces all document values if no options provided', () => {

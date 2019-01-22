@@ -1,9 +1,9 @@
 import '@toba/test';
 import { mockSchema, itemSchema } from './__mocks__/mock-schema';
 import { Collection, Query, SortDirection } from './';
-import { IndexedDB } from './providers';
+import { IndexedDbProvider } from './providers';
 
-const idb = new IndexedDB(mockSchema);
+const idb = new IndexedDbProvider(mockSchema);
 const items = new Collection(idb, itemSchema);
 
 test('supports limit condition', () => {

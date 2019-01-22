@@ -2,9 +2,9 @@ import '@toba/test';
 import { is } from '@toba/tools';
 import { mockSchema, itemSchema, orderSchema } from './__mocks__/mock-schema';
 import { Collection } from './';
-import { IndexedDB } from './providers';
+import { IndexedDbProvider } from './providers';
 
-const idb = new IndexedDB(mockSchema);
+const idb = new IndexedDbProvider(mockSchema);
 const items = new Collection(idb, itemSchema);
 const orders = new Collection(idb, orderSchema);
 

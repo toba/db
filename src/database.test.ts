@@ -1,9 +1,9 @@
 import '@toba/test';
 import { mockSchema, itemSchema, MockItem } from './__mocks__/mock-schema';
 import { Database } from './';
-import { IndexedDB } from './providers';
+import { IndexedDbProvider } from './providers';
 
-const idb = new IndexedDB(mockSchema);
+const idb = new IndexedDbProvider(mockSchema);
 
 test('retrieves collection references', async () => {
    const db = new Database(idb, mockSchema);
@@ -33,7 +33,7 @@ test('retrieves document references', async () => {
    const db = new Database(idb, mockSchema);
    const c = await db.collection<MockItem>(itemSchema.name);
    const doc = await c.add(
-      { id: 'sku', name: 'name', description: 'desc' },
+      { id: 'sku', name: 'name', description: 'desc', price: 1 },
       true
    );
    const loaded = await db.doc<MockItem>(c.id, doc.id);

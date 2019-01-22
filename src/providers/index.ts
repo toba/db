@@ -1,5 +1,5 @@
-export { IndexedDB } from './indexed-db';
-export { AsyncStorage } from './async-storage';
+export { IndexedDbProvider } from './indexed-db';
+export { AsyncStorageProvider } from './async-storage';
 export {
    DataProvider,
    DataEvent,

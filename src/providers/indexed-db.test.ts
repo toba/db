@@ -6,15 +6,15 @@ import {
    itemSchema,
    orderSchema
 } from '../__mocks__/mock-schema';
-import { IndexedDB } from './indexed-db';
+import { IndexedDbProvider } from './indexed-db';
 import { Collection } from '../';
 
-let idb: IndexedDB;
+let idb: IndexedDbProvider;
 let itemCollection: Collection<MockItem>;
 let orderCollection: Collection<MockOrder>;
 
 beforeEach(() => {
-   idb = new IndexedDB(mockSchema);
+   idb = new IndexedDbProvider(mockSchema);
    itemCollection = new Collection(idb, itemSchema);
    orderCollection = new Collection(idb, orderSchema);
 });
