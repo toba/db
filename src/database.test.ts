@@ -1,43 +1,64 @@
 import '@toba/test';
 import { mockSchema, itemSchema, MockItem } from './__mocks__/mock-schema';
+import { MockAsyncStorage } from './providers/__mocks__/mock-async-storage';
 import { Database } from './';
-import { IndexedDB } from './providers';
+import {
+   IndexedDbProvider,
+   AsyncStorageProvider,
+   DataProvider
+} from './providers';
 
-const idb = new IndexedDB(mockSchema);
-
-test('retrieves collection references', async () => {
-   const db = new Database(idb, mockSchema);
-   const c = await db.collection(itemSchema.name);
-
-   expect(c).toBeDefined();
-   expect(c.id).toBe(itemSchema.name);
+beforeAll(() => {
+   jest.mock('AsyncStorage', () => new MockAsyncStorage());
 });
 
-test('throws error if trying to access non-existent collection', async () => {
-   const db = new Database(idb, mockSchema);
-   const badName = 'bad name';
-   let err: Error | undefined;
-
-   try {
-      await db.collection(badName);
-   } catch (e) {
-      err = e;
-   }
-   expect(err).toBeDefined();
-   expect(err).toBe(
-      `Collection "${badName}" does not exist in database ${db.name}`
-   );
+afterAll(() => {
+   jest.unmock('AsyncStorage');
 });
 
-test('retrieves document references', async () => {
-   const db = new Database(idb, mockSchema);
-   const c = await db.collection<MockItem>(itemSchema.name);
-   const doc = await c.add(
-      { id: 'sku', name: 'name', description: 'desc' },
-      true
-   );
-   const loaded = await db.doc<MockItem>(c.id, doc.id);
-
-   expect(loaded).toBeDefined();
-   expect(loaded.data()).toEqual(doc.data());
+describe('IndexedDB', () => {
+   common(new IndexedDbProvider(mockSchema));
 });
+
+describe('AsyncStorage', () => {
+   common(new AsyncStorageProvider(mockSchema));
+});
+
+function common(provider: DataProvider) {
+   test('retrieves collection references', async () => {
+      const db = new Database(provider, mockSchema);
+      const c = await db.collection(itemSchema.name);
+
+      expect(c).toBeDefined();
+      expect(c.id).toBe(itemSchema.name);
+   });
+
+   test('throws error if trying to access non-existent collection', async () => {
+      const db = new Database(provider, mockSchema);
+      const badName = 'bad name';
+      let err: Error | undefined;
+
+      try {
+         await db.collection(badName);
+      } catch (e) {
+         err = e;
+      }
+      expect(err).toBeDefined();
+      expect(err).toBe(
+         `Collection "${badName}" does not exist in database ${db.name}`
+      );
+   });
+
+   test('retrieves document references', async () => {
+      const db = new Database(provider, mockSchema);
+      const c = await db.collection<MockItem>(itemSchema.name);
+      const doc = await c.add(
+         { id: 'sku', name: 'name', description: 'desc', price: 1 },
+         true
+      );
+      const loaded = await db.doc<MockItem>(c.id, doc.id);
+
+      expect(loaded).toBeDefined();
+      expect(loaded.data()).toEqual(doc.data());
+   });
+}

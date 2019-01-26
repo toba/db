@@ -115,7 +115,7 @@ export class Document<T extends DataType> {
     * Set document values without saving them. This will typically only be used
     * by data providers.
     */
-   setWithoutSaving(values: T | Partial<T>, options?: SetOptions<T>) {
+   setWithoutSaving(values: T | Partial<T>, options?: SetOptions<T>): this {
       if (values.id !== undefined && values.id !== this.id) {
          throw new Error(
             `Document ID "${this.id}" does not match data ID "${values.id}"`
@@ -138,5 +138,6 @@ export class Document<T extends DataType> {
             this.values = merge(this.values, values);
          }
       }
+      return this;
    }
 }

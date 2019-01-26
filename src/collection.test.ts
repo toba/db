@@ -1,42 +1,64 @@
 import '@toba/test';
 import { is } from '@toba/tools';
 import { mockSchema, itemSchema, orderSchema } from './__mocks__/mock-schema';
+import { MockAsyncStorage } from './providers/__mocks__/mock-async-storage';
 import { Collection } from './';
-import { IndexedDB } from './providers';
+import {
+   IndexedDbProvider,
+   AsyncStorageProvider,
+   DataProvider
+} from './providers';
 
-const idb = new IndexedDB(mockSchema);
-const items = new Collection(idb, itemSchema);
-const orders = new Collection(idb, orderSchema);
-
-test('retrieves schema name as ID', () => {
-   expect(items.id).toBe(itemSchema.name);
-   expect(orders.id).toBe(orderSchema.name);
+beforeAll(() => {
+   jest.mock('AsyncStorage', () => new MockAsyncStorage());
 });
 
-test('creates document from data', () => {
-   const doc = items.add({
-      id: 'sku',
-      name: 'three',
-      price: 0,
-      description: 'desc'
+afterAll(() => {
+   jest.unmock('AsyncStorage');
+});
+
+describe('IndexedDB', () => {
+   common(new IndexedDbProvider(mockSchema));
+});
+
+describe('AsyncStorage', () => {
+   common(new AsyncStorageProvider(mockSchema));
+});
+
+function common(provider: DataProvider) {
+   const items = new Collection(provider, itemSchema);
+   const orders = new Collection(provider, orderSchema);
+
+   test('retrieves schema name as ID', () => {
+      expect(items.id).toBe(itemSchema.name);
+      expect(orders.id).toBe(orderSchema.name);
    });
-   expect(doc).toBeDefined();
-   expect(doc.id).toBe('sku');
-});
 
-test('creates and saves document from data', async () => {
-   const p = items.add(
-      {
+   test('creates document from data', () => {
+      const doc = items.add({
          id: 'sku',
          name: 'three',
          price: 0,
          description: 'desc'
-      },
-      true
-   );
-   expect(is.promise(p)).toBe(true);
+      });
+      expect(doc).toBeDefined();
+      expect(doc.id).toBe('sku');
+   });
 
-   const doc = await p;
+   test('creates and saves document from data', async () => {
+      const p = items.add(
+         {
+            id: 'sku',
+            name: 'three',
+            price: 0,
+            description: 'desc'
+         },
+         true
+      );
+      expect(is.promise(p)).toBe(true);
 
-   expect(doc.id).toBe('sku');
-});
+      const doc = await p;
+
+      expect(doc.id).toBe('sku');
+   });
+}
