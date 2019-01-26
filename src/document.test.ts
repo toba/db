@@ -51,6 +51,7 @@ test('retrieves individual field value', () => {
    const doc = mockDoc();
    expect(doc.get('id')).toBe('sku');
    expect(doc.get('price')).toBe(1.5);
+   expect(doc.get('nothing')).toBeUndefined();
 });
 
 test('can be exported as JSON string', () => {
@@ -62,4 +63,16 @@ test('can be exported as JSON string', () => {
       description: 'desc'
    });
    expect(doc.toString()).toBe(json);
+});
+
+test('indicates if document data exist', () => {
+   const doc = new Document(items);
+   expect(doc.exists).toBe(false);
+
+   doc.setWithoutSaving({
+      price: 0,
+      name: 'name',
+      description: 'desc'
+   });
+   expect(doc.exists).toBe(true);
 });

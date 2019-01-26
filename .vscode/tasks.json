@@ -14,6 +14,18 @@
          "problemMatcher": []
       },
       {
+         "label": "Show Test Coverage",
+         "command": "./node_modules/.bin/jest",
+         "presentation": {
+            "showReuseMessage": false,
+            "clear": true
+         },
+         "args": ["--coverage"],
+         "type": "shell",
+         "group": "test",
+         "problemMatcher": []
+      },
+      {
          "label": "Build",
          "command": "./node_modules/.bin/tsc",
          "args": ["--project", "tsconfig.build.json"],
