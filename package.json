@@ -1,6 +1,6 @@
 {
    "name": "@toba/db",
-   "version": "1.0.0-beta.1",
+   "version": "1.0.0-beta.2",
    "description": "Toba Database",
    "private": false,
    "author": {
@@ -22,7 +22,7 @@
       "postinstall": "node ./node_modules/@toba/test/scripts/patch-rn-jest.js"
    },
    "devDependencies": {
-      "@toba/develop": "^4.0.0",
+      "@toba/develop": "^5.0.0",
       "@toba/test": "^3.4.0",
       "@types/react-native": "^0.57.28",
       "react-native": "^0.57.8"
