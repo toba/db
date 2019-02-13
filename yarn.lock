@@ -660,10 +660,10 @@
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.3.tgz#2b5a3ab3f918cca48a8c754c08168e3f03eba61b"
   integrity sha512-shAmDyaQC4H92APFoIaVDHCx5bStIocgvbwQyxPRrbUY20V1EYTbSDchWbuwlMG3V17cprZhA6+78JfB+3DTPw==
 
-"@toba/develop@^5.0.0":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@toba/develop/-/develop-5.0.2.tgz#68ee10bea7b70b8472809f0207628712c252a78e"
-  integrity sha512-vIhtYRlYBa5K9r3DzoCOd1UVE2M5S+TKpvmJh9P8S2KYbI9K1TWr8SRRlxK2ZwGGWAgeOqwLXwWPQe4/17DHIA==
+"@toba/develop@^6.0.0":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@toba/develop/-/develop-6.0.1.tgz#00ce8db8ee4ef89679c6e0ad9251cd1fb750464c"
+  integrity sha512-SGnIZ2wr0IAPFyPSposmL/ejy48zWvqoyvRcx1PPDO0FOj+uD3lqAhQAPov5Zmd6h28P07segbra+ddtkbQEZg==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^1.2.0"
     eslint "^5.13.0"

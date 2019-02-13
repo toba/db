@@ -1,6 +1,6 @@
 {
    "name": "@toba/db",
-   "version": "1.0.0-beta.2",
+   "version": "1.0.0-beta.3",
    "description": "Toba Database",
    "private": false,
    "author": {
@@ -11,10 +11,10 @@
    "publishConfig": {
       "access": "public"
    },
-   "main": "dist/index.js",
-   "types:": "dist/index.d.ts",
+   "main": "es6/index.js",
+   "types:": "es6/index.d.ts",
    "files": [
-      "dist/**/*"
+      "es6/**/*"
    ],
    "scripts": {
       "prepublishOnly": "./node_modules/.bin/tsc --project tsconfig.build.json",
@@ -22,7 +22,7 @@
       "postinstall": "node ./node_modules/@toba/test/scripts/patch-rn-jest.js"
    },
    "devDependencies": {
-      "@toba/develop": "^5.0.0",
+      "@toba/develop": "^6.0.0",
       "@toba/test": "^3.4.0",
       "@types/react-native": "^0.57.28",
       "react-native": "^0.57.8"

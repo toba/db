@@ -1,5 +1,5 @@
 node_modules/
 coverage/
-dist/
+es6/
 examples/dist
 yarn-error.log
