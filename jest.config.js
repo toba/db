@@ -1,1 +1,1 @@
-module.exports = require('@toba/test/jest/mobile');
+module.exports = require('@toba/test/jest');

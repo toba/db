@@ -5,17 +5,8 @@ import {
    itemSchema,
    orderSchema
 } from './__mocks__/mock-schema';
-import { MockAsyncStorage } from './providers/__mocks__/mock-async-storage';
 import { Document, Collection } from './';
-import {
-   IndexedDbProvider,
-   AsyncStorageProvider,
-   DataProvider
-} from './providers';
-
-beforeAll(() => {
-   jest.mock('AsyncStorage', () => new MockAsyncStorage());
-});
+import { IndexedDbProvider, DataProvider } from './providers';
 
 afterAll(() => {
    jest.unmock('AsyncStorage');
@@ -23,10 +14,6 @@ afterAll(() => {
 
 describe('IndexedDB', () => {
    common(new IndexedDbProvider(mockSchema));
-});
-
-describe('AsyncStorage', () => {
-   common(new AsyncStorageProvider(mockSchema));
 });
 
 function common(provider: DataProvider) {

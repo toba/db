@@ -1,27 +1,10 @@
 import '@toba/test';
 import { mockSchema, itemSchema, MockItem } from './__mocks__/mock-schema';
-import { MockAsyncStorage } from './providers/__mocks__/mock-async-storage';
 import { Database } from './';
-import {
-   IndexedDbProvider,
-   AsyncStorageProvider,
-   DataProvider
-} from './providers';
-
-beforeAll(() => {
-   jest.mock('AsyncStorage', () => new MockAsyncStorage());
-});
-
-afterAll(() => {
-   jest.unmock('AsyncStorage');
-});
+import { IndexedDbProvider, DataProvider } from './providers';
 
 describe('IndexedDB', () => {
    common(new IndexedDbProvider(mockSchema));
-});
-
-describe('AsyncStorage', () => {
-   common(new AsyncStorageProvider(mockSchema));
 });
 
 function common(provider: DataProvider) {
