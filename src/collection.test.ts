@@ -4,10 +4,6 @@ import { mockSchema, itemSchema, orderSchema } from './__mocks__/mock-schema';
 import { Collection } from './';
 import { IndexedDbProvider, DataProvider } from './providers';
 
-afterAll(() => {
-   jest.unmock('AsyncStorage');
-});
-
 describe('IndexedDB', () => {
    common(new IndexedDbProvider(mockSchema));
 });
