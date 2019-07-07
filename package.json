@@ -21,15 +21,15 @@
       "test": "jest --coverage"
    },
    "devDependencies": {
-      "@toba/develop": "^6.4.3",
-      "@toba/test": "^3.7.6"
+      "@toba/develop": "^6.5.3",
+      "@toba/test": "^3.8.1"
    },
    "repository": {
       "type": "git",
       "url": "https://github.com/toba/db"
    },
    "dependencies": {
-      "@toba/tools": "^6.5.1",
+      "@toba/tools": "^6.6.2",
       "ulid": "^2.3.0"
    }
 }
