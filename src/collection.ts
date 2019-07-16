@@ -1,3 +1,4 @@
+import { is } from '@toba/tools';
 import {
    Document,
    Query,
@@ -6,21 +7,21 @@ import {
    Boundary,
    CollectionSchema
 } from './';
-import { DataProvider, DataType, DataEntity } from './providers';
-import { is } from '@toba/tools';
+import { DataStore } from './store';
+import { DataType, StoreEntity } from './types';
 
-export class Collection<T extends DataType> extends DataEntity {
+export class Collection<T extends DataType> extends StoreEntity {
    schema: CollectionSchema<T>;
 
    /**
     * A reference to the containing `Document` if this is a subcollection. If
-    * this isn't a subcollection, the reference is null.
+    * this isn't a subcollection, the reference is `null`.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#parent
     */
    parent: Document<T> | null; // TODO: implement or disable doc parents
 
-   constructor(provider: DataProvider, schema: CollectionSchema<T>) {
-      super(provider);
+   constructor(store: DataStore, schema: CollectionSchema<T>) {
+      super(store);
       this.schema = schema;
    }
 
@@ -56,7 +57,7 @@ export class Collection<T extends DataType> extends DataEntity {
          return new Document(this);
       }
       const doc = new Document(this, id);
-      return this.provider.getDocument(doc);
+      return this.store.getDocument(doc);
    }
 
    /**

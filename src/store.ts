@@ -1,11 +1,24 @@
-import { is } from '@toba/tools';
-import { Document, Query, Result, CollectionSchema, indexName } from '../';
-import { DataProvider, DataEvent, DataType } from './base';
+import { is, EventEmitter } from '@toba/tools';
+import {
+   Document,
+   Collection,
+   Query,
+   Schema,
+   Result,
+   CollectionSchema,
+   indexName
+} from '.';
+import { domStringListToArray } from './tools';
+import { DataType } from './types';
 
 export enum AccessType {
    ReadWrite = 'readwrite',
    ReadOnly = 'readonly',
    Upgrade = 'versionchange'
+}
+
+export enum DataEvent {
+   Error
 }
 
 /**
@@ -18,28 +31,38 @@ const createOptions: IDBObjectStoreParameters = {
    autoIncrement: false
 };
 
-function domStringListToArray(domStrings: DOMStringList): string[] {
-   const list: string[] = [];
-   for (let i = 0; i < domStrings.length; i++) {
-      list.push(domStrings.item(i)!);
-   }
-   return list;
-}
-
 /**
- * IndexedDB uses object stores rather than tables, and a single database can
+ * IndexedDB uses object stores rather than tables and a single database can
  * contain any number of object stores. Whenever a value is stored in an object
  * store, it is associated with a key. There are several different ways that a
  * key can be supplied depending on whether the object store uses a key path or
  * a key generator.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
  */
-export class IndexedDbProvider extends DataProvider {
+export class DataStore extends EventEmitter<DataEvent, any> {
+   private schema: Schema;
    /**
     * The open database. It will be `null` if the database hasn't yet been
     * opened.
     */
    private db: IDBDatabase | null = null;
+
+   constructor(schema: Schema) {
+      super();
+      this.schema = schema;
+   }
+
+   protected get name() {
+      return this.schema.name;
+   }
+
+   protected get version() {
+      return this.schema.version;
+   }
+
+   protected get collectionSchemas() {
+      return this.schema.collections;
+   }
 
    private ensureDB = (): Promise<IDBDatabase> =>
       this.db !== null
@@ -112,7 +135,9 @@ export class IndexedDbProvider extends DataProvider {
     *
     * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB#Creating_or_updating_the_version_of_the_database
     */
-   private upgrade = (req: IDBOpenDBRequest) => (_ev: IDBVersionChangeEvent) => {
+   private upgrade = (req: IDBOpenDBRequest) => (
+      _ev: IDBVersionChangeEvent
+   ) => {
       const db = req.result;
 
       this.collectionSchemas.forEach(c => {
@@ -229,6 +254,29 @@ export class IndexedDbProvider extends DataProvider {
             reject();
          };
       });
+   }
+
+   /**
+    * Support `getDocument()` by normalizing the overloads.
+    */
+   private ensureDoc<T extends DataType>(
+      docOrSchema: Document<T> | CollectionSchema<T>,
+      id?: string
+   ): Document<T> {
+      if (docOrSchema instanceof Document) {
+         return docOrSchema;
+      } else {
+         const schema = docOrSchema;
+         if (id === undefined) {
+            throw Error(
+               `No ID given to retrieve document from "${
+                  schema.name
+               }" collection`
+            );
+         }
+         const c = new Collection<T>(this, schema);
+         return new Document<T>(c, id);
+      }
    }
 
    /**

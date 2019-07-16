@@ -1,10 +1,10 @@
 import '@toba/test';
 import { MockItem, mockSchema, itemSchema } from './__mocks__/mock-schema';
 import { Document, Collection } from './';
-import { IndexedDbProvider } from './providers';
+import { DataStore } from './store';
 
-const idb = new IndexedDbProvider(mockSchema);
-const items = new Collection<MockItem>(idb, itemSchema);
+const store = new DataStore(mockSchema);
+const items = new Collection<MockItem>(store, itemSchema);
 const mockDoc = () =>
    new Document<MockItem>(items, {
       id: 'sku',

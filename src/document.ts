@@ -1,6 +1,6 @@
 import { is, merge } from '@toba/tools';
 import { ulid } from 'ulid';
-import { DataType } from './providers';
+import { DataType } from './types';
 import { Collection, SetOptions } from './';
 
 /**
@@ -84,7 +84,7 @@ export class Document<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#delete
     */
    delete = (): Promise<void> =>
-      this.parent.provider.deleteDocument(this)
+      this.parent.store.deleteDocument(this)
          ? Promise.resolve()
          : Promise.reject();
 
@@ -106,7 +106,7 @@ export class Document<T extends DataType> {
     */
    set(values: Partial<T>, options?: SetOptions<T>): Promise<void> {
       this.setWithoutSaving(values, options);
-      return this.parent.provider.saveDocument(this);
+      return this.parent.store.saveDocument(this);
    }
 
    toString = () => JSON.stringify(this.values);

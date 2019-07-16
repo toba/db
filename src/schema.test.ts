@@ -1,7 +1,7 @@
 import '@toba/test';
 import { MockItem } from './__mocks__/mock-schema';
 import { indexName, Index } from './';
-import { ExcludeID } from './providers';
+import { ExcludeID } from './types';
 
 type ItemKeys = ExcludeID<MockItem>;
 

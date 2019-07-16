@@ -1,11 +1,8 @@
 import { MimeType } from '@toba/tools';
-
 /**
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays#ArrayBuffer
  */
-export const bufferToBlob = (buffer: ArrayBuffer, type: MimeType) =>
-   new Blob([buffer], { type });
-
+export declare const bufferToBlob: (buffer: ArrayBuffer, type: MimeType) => Blob;
 /**
  * If you are storing large, user-generated files such as images or videos, then
  * you may try to store them as `File` or `Blob` objects. This will work on some
@@ -17,13 +14,5 @@ export const bufferToBlob = (buffer: ArrayBuffer, type: MimeType) =>
  *
  * @see https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/indexeddb-best-practices
  */
-export const blobToBuffer = (blob: Blob) =>
-   new Promise<ArrayBuffer>((resolve, reject) => {
-      const reader = new FileReader();
-
-      reader.addEventListener('loadend', () => {
-         resolve(reader.result as ArrayBuffer);
-      });
-      reader.addEventListener('error', reject);
-      reader.readAsArrayBuffer(blob);
-   });
+export declare const blobToBuffer: (blob: Blob) => Promise<ArrayBuffer>;
+export declare function domStringListToArray(domStrings: DOMStringList): string[];

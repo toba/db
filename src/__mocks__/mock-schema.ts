@@ -1,5 +1,5 @@
-import { Schema as MockSchema, CollectionSchema } from '../';
-import { DataType } from '../providers/base';
+import { Schema, CollectionSchema } from '../';
+import { DataType } from '../types';
 
 export interface MockOrder extends DataType {
    itemID: string;
@@ -33,7 +33,7 @@ export const orderSchema: CollectionSchema<MockOrder> = {
    ]
 };
 
-export const mockSchema: MockSchema = {
+export const mockSchema: Schema = {
    name: 'mock',
    version: 1,
    collections: [orderSchema, itemSchema]

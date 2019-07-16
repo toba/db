@@ -1,4 +1,4 @@
-import { DataType, ExcludeID } from './providers';
+import { DataType, ExcludeID } from './types';
 import { is } from '@toba/tools';
 
 /**
@@ -26,22 +26,22 @@ export interface Marshall<T extends DataType> {
 /**
  * Database schema.
  */
-export interface MockSchema {
+export interface Schema {
    /** Database name. */
    name: string;
 
    /**
     * The version to open the database with. If the version is not provided and
-    * the database exists, then a connection to the database will be opened
+    * the database exists then a connection to the database will be opened
     * without changing its version. If the version is not provided and the
-    * database does not exist, then it will be created with version 1
+    * database does not exist then it will be created with version 1
     * (IndexedDB documentation).
     * @see https://developer.mozilla.org/en-US/docs/Web/API/IDBFactory/open#Parameters
     */
    version: number;
 
    /** Document collection schemas */
-   collections: CollectionSchema<DataType>[];
+   collections: CollectionSchema<any>[];
 }
 
 /**

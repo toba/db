@@ -5,29 +5,29 @@ import {
    mockSchema,
    itemSchema,
    orderSchema
-} from '../__mocks__/mock-schema';
-import { IndexedDbProvider } from './indexed-db';
-import { Collection } from '../';
+} from './__mocks__/mock-schema';
+import { Collection } from './';
+import { DataStore } from './store';
 
-let idb: IndexedDbProvider;
+let store: DataStore;
 let itemCollection: Collection<MockItem>;
 let orderCollection: Collection<MockOrder>;
 
 beforeEach(() => {
-   idb = new IndexedDbProvider(mockSchema);
-   itemCollection = new Collection(idb, itemSchema);
-   orderCollection = new Collection(idb, orderSchema);
+   store = new DataStore(mockSchema);
+   itemCollection = new Collection(store, itemSchema);
+   orderCollection = new Collection(store, orderSchema);
 });
 
 test('creates a database with collections', async () => {
-   const names = await idb.collectionNames();
+   const names = await store.collectionNames();
    const created = mockSchema.collections.map(c => c.name).sort();
 
    expect(names.sort()).toEqual(created);
 });
 
 test('creates indexes', async () => {
-   const names = await idb.indexNames(itemSchema);
+   const names = await store.indexNames(itemSchema);
    const indexes = itemSchema.indexes!.map(c => c.field).sort();
 
    expect(names).toHaveLength(1);
@@ -44,9 +44,9 @@ test('saves documents in a collection', async () => {
 
    expect(doc.data()).toHaveProperty('id', doc.id);
 
-   await idb.saveDocument(doc);
+   await store.saveDocument(doc);
 
-   const saved = await idb.getDocument(doc);
+   const saved = await store.getDocument(doc);
    expect(saved.data()).toBeDefined();
    expect(saved.data()).toEqual(doc.data());
 });
@@ -61,9 +61,9 @@ test('documents can be retrieved by ID and collection schema', async () => {
 
    expect(doc.data()).toHaveProperty('id', doc.id);
 
-   await idb.saveDocument(doc);
+   await store.saveDocument(doc);
 
-   const saved = await idb.getDocument(itemSchema, doc.id);
+   const saved = await store.getDocument(itemSchema, doc.id);
    expect(saved.data()).toBeDefined();
    expect(saved.data()).toEqual(doc.data());
 });
@@ -77,9 +77,9 @@ test('documents can be deleted', async () => {
 
    expect(doc.data()).toHaveProperty('itemID', doc.data().itemID);
 
-   await idb.saveDocument(doc);
-   await idb.deleteDocument(doc);
+   await store.saveDocument(doc);
+   await store.deleteDocument(doc);
 
-   const saved = await idb.getDocument(doc);
+   const saved = await store.getDocument(doc);
    expect(saved).toBeUndefined();
 });

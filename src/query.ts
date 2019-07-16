@@ -1,5 +1,5 @@
 import { Document, Result, Collection } from './';
-import { DataType } from './providers';
+import { DataType } from './types';
 
 export enum SortDirection {
    Ascending,
@@ -29,6 +29,8 @@ export interface Sort<T extends DataType> {
 }
 
 /**
+ * A `Query` refers to a Query which you can read or listen to. You can also
+ * construct refined `Query` objects by adding filters and ordering.
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query
  */
 export class Query<T extends DataType> {
@@ -50,7 +52,7 @@ export class Query<T extends DataType> {
     * (inclusive). The end position is relative to the order of the query. The
     * document must contain all of the fields provided in the `orderBy` of this
     * query.
-    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query#endAt
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#endat
     */
    endAt(value: Boundary<T>): this {
       this.range.endAt = value;
@@ -62,7 +64,7 @@ export class Query<T extends DataType> {
     * (exclusive). The end position is relative to the order of the query. The
     * document must contain all of the fields provided in the `orderBy` of this
     * query.
-    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query#endBefore
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#endBefore
     */
    endBefore(value: Boundary<T>): this {
       this.range.endBefore = value;
@@ -71,14 +73,14 @@ export class Query<T extends DataType> {
 
    /**
     * Executes the query and returns the results.
-    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query#get
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#get
     */
-   get = (): Result<T> => this.collection.provider.query(this);
+   get = (): Result<T> => this.collection.store.query(this);
 
    /**
     * Creates a new query where the results are limited to the specified number
     * of documents.
-    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query#limit
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#limit
     */
    limit(count: number): this {
       this.max = count;
@@ -88,7 +90,7 @@ export class Query<T extends DataType> {
    /**
     * Creates a new query where the results are sorted by the specified field,
     * in descending or ascending order.
-    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query#orderBy
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#orderBy
     */
    orderBy(
       fieldName: keyof T,
@@ -104,7 +106,7 @@ export class Query<T extends DataType> {
     * (exclusive). The starting position is relative to the order of the query.
     * The document must contain all of the fields provided in the `orderBy` of
     * this query.
-    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query#startAfter
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#startAfter
     */
    startAfter(value: Boundary<T>): this {
       this.range.startAfter = value;
@@ -116,7 +118,7 @@ export class Query<T extends DataType> {
     * (inclusive). The starting position is relative to the order of the query.
     * The document must contain all of the fields provided in the `orderBy` of
     * this query.
-    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query#startAfter
+    * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#startAfter
     */
    startAt(value: Boundary<T>): this {
       this.range.startAt = value;
