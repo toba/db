@@ -7,7 +7,7 @@ import {
    Boundary,
    CollectionSchema
 } from './';
-import { DataStore } from './store';
+import { DataClient } from './client';
 import { DataType, StoreEntity } from './types';
 
 export class Collection<T extends DataType> extends StoreEntity {
@@ -20,8 +20,8 @@ export class Collection<T extends DataType> extends StoreEntity {
     */
    parent: Document<T> | null; // TODO: implement or disable doc parents
 
-   constructor(store: DataStore, schema: CollectionSchema<T>) {
-      super(store);
+   constructor(client: DataClient, schema: CollectionSchema<T>) {
+      super(client);
       this.schema = schema;
    }
 
@@ -57,7 +57,7 @@ export class Collection<T extends DataType> extends StoreEntity {
          return new Document(this);
       }
       const doc = new Document(this, id);
-      return this.store.getDocument(doc);
+      return this.client.getDocument(doc);
    }
 
    /**

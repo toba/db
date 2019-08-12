@@ -8,6 +8,9 @@ import { Collection, SetOptions } from './';
  * The `Document` is a reference to the actual stored data which are accessed
  * with the `data()` method.
  *
+ * A `Document` may exist without having any data (yet) in which case it is akin
+ * to a reference.
+ *
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference
  */
@@ -77,14 +80,14 @@ export class Document<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#get
     */
    get = <K extends keyof T>(key: K): T[K] | undefined =>
-      this.values !== undefined ? this.values[key] : this.values;
+      this.values !== undefined ? this.values[key] : undefined;
 
    /**
     * Remove document data from the store.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#delete
     */
    delete = (): Promise<void> =>
-      this.parent.store.deleteDocument(this)
+      this.parent.client.deleteDocument(this)
          ? Promise.resolve()
          : Promise.reject();
 
@@ -106,7 +109,7 @@ export class Document<T extends DataType> {
     */
    set(values: Partial<T>, options?: SetOptions<T>): Promise<void> {
       this.setWithoutSaving(values, options);
-      return this.parent.store.saveDocument(this);
+      return this.parent.client.saveDocument(this);
    }
 
    toString = () => JSON.stringify(this.values);

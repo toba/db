@@ -1,5 +1,5 @@
 import { Collection, Schema, Document } from './';
-import { DataStore } from './store';
+import { DataClient } from './client';
 import { DataType, StoreEntity } from './types';
 import { CollectionSchema } from './schema';
 
@@ -9,12 +9,12 @@ export class Database extends StoreEntity {
     */
    private schema: Schema;
 
-   constructor(store: DataStore, schema: Schema) {
-      super(store);
+   constructor(client: DataClient, schema: Schema) {
+      super(client);
       this.schema = schema;
    }
 
-   open = () => this.store.open();
+   open = () => this.client.open();
 
    get name() {
       return this.schema.name;
@@ -37,7 +37,7 @@ export class Database extends StoreEntity {
       }
       // type coercion is needed because the type-specific schemas in
       // .collections are all stored as CollectionSchema<DataType>
-      return new Collection<T>(this.store, schema as CollectionSchema<T>);
+      return new Collection<T>(this.client, schema as CollectionSchema<T>);
    }
 
    /**

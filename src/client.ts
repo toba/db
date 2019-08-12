@@ -32,6 +32,9 @@ const createOptions: IDBObjectStoreParameters = {
 };
 
 /**
+ * `DataClient` is the IndexedDB client. It is initialized with a `Schema` that
+ * defines the structure of the data.
+ *
  * IndexedDB uses object stores rather than tables and a single database can
  * contain any number of object stores. Whenever a value is stored in an object
  * store, it is associated with a key. There are several different ways that a
@@ -39,7 +42,7 @@ const createOptions: IDBObjectStoreParameters = {
  * a key generator.
  * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
  */
-export class DataStore extends EventEmitter<DataEvent, any> {
+export class DataClient extends EventEmitter<DataEvent, any> {
    private schema: Schema;
    /**
     * The open database. It will be `null` if the database hasn't yet been
@@ -64,6 +67,9 @@ export class DataStore extends EventEmitter<DataEvent, any> {
       return this.schema.collections;
    }
 
+   /**
+    * Ensure databse is created and open.
+    */
    private ensureDB = (): Promise<IDBDatabase> =>
       this.db !== null
          ? Promise.resolve(this.db)
@@ -95,6 +101,9 @@ export class DataStore extends EventEmitter<DataEvent, any> {
       }
    }
 
+   /**
+    * @param closeDatabase Whether to close the database before raising the error
+    */
    private onError = (
       req: IDBOpenDBRequest,
       cb: (er: DOMException | null) => void,

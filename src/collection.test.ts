@@ -2,11 +2,11 @@ import '@toba/test';
 import { is } from '@toba/tools';
 import { mockSchema, itemSchema, orderSchema } from './__mocks__/mock-schema';
 import { Collection } from './';
-import { DataStore } from './store';
+import { DataClient } from './client';
 
-const store = new DataStore(mockSchema);
-const items = new Collection(store, itemSchema);
-const orders = new Collection(store, orderSchema);
+const client = new DataClient(mockSchema);
+const items = new Collection(client, itemSchema);
+const orders = new Collection(client, orderSchema);
 
 test('retrieves schema name as ID', () => {
    expect(items.id).toBe(itemSchema.name);

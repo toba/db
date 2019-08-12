@@ -11,10 +11,9 @@ export const indexName = <T extends DataType>(index: Index<T>): string =>
       : (index.field as string);
 
 export interface Index<T extends DataType> {
-   /**
-    * Field name or names to be indexed other than `id`.
-    */
+   /** Field name or names to be indexed other than `id` */
    field: ExcludeID<T> | (ExcludeID<T>[]);
+   /** Whether index vaiues should be unique */
    unique?: boolean;
 }
 
@@ -24,10 +23,21 @@ export interface Marshall<T extends DataType> {
 }
 
 /**
+ * Collection Schema defines the name and indexes for stored documents of a
+ * particular type. It is conceptually equivalent to a table definition.
+ */
+export interface CollectionSchema<T extends DataType> {
+   /** Collection name */
+   name: string;
+   /** Fields that should be indexed */
+   indexes?: Index<T>[];
+}
+
+/**
  * Database schema.
  */
 export interface Schema {
-   /** Database name. */
+   /** Database name */
    name: string;
 
    /**
@@ -42,15 +52,4 @@ export interface Schema {
 
    /** Document collection schemas */
    collections: CollectionSchema<any>[];
-}
-
-/**
- * Collection Schema defines the name and indexes for stored documents of a
- * particular type.
- */
-export interface CollectionSchema<T extends DataType> {
-   /** Collection name. */
-   name: string;
-   /** Fields that should be indexed. */
-   indexes?: Index<T>[];
 }

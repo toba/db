@@ -1,12 +1,12 @@
 import '@toba/test';
 import { mockSchema, itemSchema, MockItem } from './__mocks__/mock-schema';
 import { Database } from './';
-import { DataStore } from './store';
+import { DataClient } from './client';
 
-const store = new DataStore(mockSchema);
+const client = new DataClient(mockSchema);
 
 test('retrieves collection references', async () => {
-   const db = new Database(store, mockSchema);
+   const db = new Database(client, mockSchema);
    const c = await db.collection(itemSchema.name);
 
    expect(c).toBeDefined();
@@ -14,7 +14,7 @@ test('retrieves collection references', async () => {
 });
 
 test('throws error if trying to access non-existent collection', async () => {
-   const db = new Database(store, mockSchema);
+   const db = new Database(client, mockSchema);
    const badName = 'bad name';
    let err: Error | undefined;
 
@@ -30,7 +30,7 @@ test('throws error if trying to access non-existent collection', async () => {
 });
 
 test('retrieves document references', async () => {
-   const db = new Database(store, mockSchema);
+   const db = new Database(client, mockSchema);
    const c = await db.collection<MockItem>(itemSchema.name);
    const doc = await c.add(
       { id: 'sku', name: 'name', description: 'desc', price: 1 },

@@ -1,10 +1,10 @@
 import '@toba/test';
 import { mockSchema, itemSchema } from './__mocks__/mock-schema';
 import { Collection, Query, SortDirection } from './';
-import { DataStore } from './store';
+import { DataClient } from './client';
 
-const store = new DataStore(mockSchema);
-const items = new Collection(store, itemSchema);
+const client = new DataClient(mockSchema);
+const items = new Collection(client, itemSchema);
 
 test('supports limit condition', () => {
    const query = new Query(items);

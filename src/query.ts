@@ -75,7 +75,7 @@ export class Query<T extends DataType> {
     * Executes the query and returns the results.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#get
     */
-   get = (): Result<T> => this.collection.store.query(this);
+   get = (): Result<T> => this.collection.client.query(this);
 
    /**
     * Creates a new query where the results are limited to the specified number
