@@ -13,7 +13,7 @@ An IndexedDB API intentionally modeled after [Firestore](https://firebase.google
 with the expectation it will often be used alongside Firestore.
 
 ```sh
-yarn add @toba/db --dev
+npm install @toba/db
 ```
 
 ## License
