@@ -5,6 +5,9 @@ import { ulid } from 'ulid';
  * The `Document` is a reference to the actual stored data which are accessed
  * with the `data()` method.
  *
+ * A `Document` may exist without having any data (yet) in which case it is akin
+ * to a reference.
+ *
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference
  */
@@ -20,12 +23,12 @@ export class Document {
          * doesn't exist.
          * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#get
          */
-        this.get = (key) => this.values !== undefined ? this.values[key] : this.values;
+        this.get = (key) => this.values !== undefined ? this.values[key] : undefined;
         /**
          * Remove document data from the store.
          * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#delete
          */
-        this.delete = () => this.parent.store.deleteDocument(this)
+        this.delete = () => this.parent.client.deleteDocument(this)
             ? Promise.resolve()
             : Promise.reject();
         /**
@@ -68,7 +71,7 @@ export class Document {
      */
     set(values, options) {
         this.setWithoutSaving(values, options);
-        return this.parent.store.saveDocument(this);
+        return this.parent.client.saveDocument(this);
     }
     /**
      * Set document values without saving them. This will typically only be used

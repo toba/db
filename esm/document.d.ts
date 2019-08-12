@@ -5,6 +5,9 @@ import { Collection, SetOptions } from './';
  * The `Document` is a reference to the actual stored data which are accessed
  * with the `data()` method.
  *
+ * A `Document` may exist without having any data (yet) in which case it is akin
+ * to a reference.
+ *
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference
  */

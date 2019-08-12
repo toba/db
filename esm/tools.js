@@ -3,13 +3,13 @@
  */
 export const bufferToBlob = (buffer, type) => new Blob([buffer], { type });
 /**
- * If you are storing large, user-generated files such as images or videos, then
- * you may try to store them as `File` or `Blob` objects. This will work on some
- * platforms but fail on others. Safari on iOS, in particular, cannot store
+ * "If you are storing large, user-generated files such as images or videos,
+ * then you may try to store them as `File` or `Blob` objects. This will work on
+ * some platforms but fail on others. Safari on iOS, in particular, cannot store
  * `Blob`s in IndexedDB.
  *
- * Luckily it is not too difficult to convert a Blob into an `ArrayBuffer`, and
- * visa versa. Storing `ArrayBuffers` in IndexedDB is very well supported.
+ * "Luckily it is not too difficult to convert a Blob into an `ArrayBuffer`, and
+ * visa versa. Storing `ArrayBuffers` in IndexedDB is very well supported."
  *
  * @see https://developers.google.com/web/fundamentals/instant-and-offline/web-storage/indexeddb-best-practices
  */

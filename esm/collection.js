@@ -2,8 +2,8 @@ import { is } from '@toba/tools';
 import { Document, Query, SortDirection } from './';
 import { StoreEntity } from './types';
 export class Collection extends StoreEntity {
-    constructor(store, schema) {
-        super(store);
+    constructor(client, schema) {
+        super(client);
         /**
          * Creates a new query where the results end at the provided document
          * (inclusive). The end position is relative to the order of the query. The
@@ -91,6 +91,6 @@ export class Collection extends StoreEntity {
             return new Document(this);
         }
         const doc = new Document(this, id);
-        return this.store.getDocument(doc);
+        return this.client.getDocument(doc);
     }
 }

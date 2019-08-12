@@ -1,12 +1,12 @@
 import { Collection, Schema, Document } from './';
-import { DataStore } from './store';
+import { DataClient } from './client';
 import { DataType, StoreEntity } from './types';
 export declare class Database extends StoreEntity {
     /**
      * Schema that defines the collections, their data types and indexes.
      */
     private schema;
-    constructor(store: DataStore, schema: Schema);
+    constructor(client: DataClient, schema: Schema);
     open: () => Promise<void>;
     readonly name: string;
     readonly version: number;

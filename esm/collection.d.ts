@@ -1,5 +1,5 @@
 import { Document, Query, SortDirection, Operator, Boundary, CollectionSchema } from './';
-import { DataStore } from './store';
+import { DataClient } from './client';
 import { DataType, StoreEntity } from './types';
 export declare class Collection<T extends DataType> extends StoreEntity {
     schema: CollectionSchema<T>;
@@ -9,7 +9,7 @@ export declare class Collection<T extends DataType> extends StoreEntity {
      * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#parent
      */
     parent: Document<T> | null;
-    constructor(store: DataStore, schema: CollectionSchema<T>);
+    constructor(client: DataClient, schema: CollectionSchema<T>);
     readonly id: string;
     add<S extends boolean>(data: T): Document<T>;
     add<S extends boolean>(data: T, save: S): S extends true ? Promise<Document<T>> : Document<T>;

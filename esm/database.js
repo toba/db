@@ -1,9 +1,9 @@
 import { Collection } from './';
 import { StoreEntity } from './types';
 export class Database extends StoreEntity {
-    constructor(store, schema) {
-        super(store);
-        this.open = () => this.store.open();
+    constructor(client, schema) {
+        super(client);
+        this.open = () => this.client.open();
         this.schema = schema;
     }
     get name() {
@@ -23,7 +23,7 @@ export class Database extends StoreEntity {
         }
         // type coercion is needed because the type-specific schemas in
         // .collections are all stored as CollectionSchema<DataType>
-        return new Collection(this.store, schema);
+        return new Collection(this.client, schema);
     }
     /**
      * Gets a Document instance that refers to the document with the specified

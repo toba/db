@@ -21,7 +21,7 @@ export class Query {
          * Executes the query and returns the results.
          * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#get
          */
-        this.get = () => this.collection.store.query(this);
+        this.get = () => this.collection.client.query(this);
         this.collection = collection;
     }
     /**

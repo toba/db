@@ -1,8 +1,8 @@
 /**
- * An entity with access to the `DataStore`.
+ * An entity with access to the `DataClient`.
  */
 export class StoreEntity {
-    constructor(store) {
-        this.store = store;
+    constructor(client) {
+        this.client = client;
     }
 }

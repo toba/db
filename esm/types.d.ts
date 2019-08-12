@@ -1,4 +1,4 @@
-import { DataStore } from './store';
+import { DataClient } from './client';
 /**
  * Type of data stored in a `Document`.
  */
@@ -15,9 +15,9 @@ export declare type DataType = {
  */
 export declare type ExcludeID<T extends DataType> = keyof Pick<T, Exclude<keyof T, 'id'>>;
 /**
- * An entity with access to the `DataStore`.
+ * An entity with access to the `DataClient`.
  */
 export declare abstract class StoreEntity {
-    store: DataStore;
-    constructor(store: DataStore);
+    client: DataClient;
+    constructor(client: DataClient);
 }
