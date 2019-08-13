@@ -6,3 +6,4 @@ export { Result } from './result';
 export { Transaction } from './transaction';
 export { SetOptions } from './options';
 export { Schema, Index, CollectionSchema, indexName } from './schema';
+export { DataType, StoreEntity, ExcludeID } from './types';

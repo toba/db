@@ -1,35 +1,35 @@
 {
-  "name": "@toba/db",
-  "version": "1.0.0-beta.6",
-  "description": "Toba Database",
-  "private": false,
-  "author": {
-    "name": "Jason Abbott",
-    "url": "http://github.com/toba"
-  },
-  "license": "MIT",
-  "publishConfig": {
-    "access": "public"
-  },
-  "main": "esm/index.js",
-  "types:": "esm/index.d.ts",
-  "files": [
-    "esm/**/*"
-  ],
-  "scripts": {
-    "prepublishOnly": "./node_modules/.bin/tsc --project tsconfig.build.json",
-    "test": "jest --coverage"
-  },
-  "devDependencies": {
-    "@toba/develop": "^6.6.1",
-    "@toba/test": "^4.0.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/toba/db"
-  },
-  "dependencies": {
-    "@toba/tools": "^6.6.3",
-    "ulid": "^2.3.0"
-  }
+   "name": "@toba/db",
+   "version": "1.0.0-beta.7",
+   "description": "Toba Database",
+   "private": false,
+   "author": {
+      "name": "Jason Abbott",
+      "url": "http://github.com/toba"
+   },
+   "license": "MIT",
+   "publishConfig": {
+      "access": "public"
+   },
+   "main": "esm/index.js",
+   "types:": "esm/index.d.ts",
+   "files": [
+      "esm/**/*"
+   ],
+   "scripts": {
+      "prepublishOnly": "./node_modules/.bin/tsc --project tsconfig.build.json",
+      "test": "jest --coverage"
+   },
+   "devDependencies": {
+      "@toba/develop": "^6.6.1",
+      "@toba/test": "^4.0.0"
+   },
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/toba/db"
+   },
+   "dependencies": {
+      "@toba/tools": "^6.6.3",
+      "ulid": "^2.3.0"
+   }
 }

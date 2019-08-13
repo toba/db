@@ -5,3 +5,4 @@ export { Query, SortDirection } from './query';
 export { Result } from './result';
 export { Transaction } from './transaction';
 export { indexName } from './schema';
+export { StoreEntity } from './types';
