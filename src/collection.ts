@@ -1,4 +1,4 @@
-import { is } from '@toba/tools';
+import { is } from '@toba/tools'
 import {
    Document,
    Query,
@@ -6,44 +6,44 @@ import {
    Operator,
    Boundary,
    CollectionSchema
-} from './';
-import { DataClient } from './client';
-import { DataType, StoreEntity } from './types';
+} from './'
+import { DataClient } from './client'
+import { DataType, StoreEntity } from './types'
 
 export class Collection<T extends DataType> extends StoreEntity {
-   schema: CollectionSchema<T>;
+   schema: CollectionSchema<T>
 
    /**
     * A reference to the containing `Document` if this is a subcollection. If
     * this isn't a subcollection, the reference is `null`.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#parent
     */
-   parent: Document<T> | null; // TODO: implement or disable doc parents
+   parent: Document<T> | null // TODO: implement or disable doc parents
 
    constructor(client: DataClient, schema: CollectionSchema<T>) {
-      super(client);
-      this.schema = schema;
+      super(client)
+      this.schema = schema
    }
 
    get id() {
-      return this.schema.name;
+      return this.schema.name
    }
 
    // overloads necessary to work around conditional type limitations
    // https://stackoverflow.com/a/54027165
-   add<S extends boolean>(data: T): Document<T>;
+   add<S extends boolean>(data: T): Document<T>
    add<S extends boolean>(
       data: T,
       save: S
-   ): S extends true ? Promise<Document<T>> : Document<T>;
+   ): S extends true ? Promise<Document<T>> : Document<T>
    /**
     * Adds a new document to this collection with the specified data, assigning
     * it a document ID automatically if one is not provided in the data.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#add
     */
    add(data: T, save = false): Promise<Document<T>> | Document<T> {
-      const doc = new Document<T>(this, data);
-      return save ? doc.set(data).then(() => doc) : doc;
+      const doc = new Document<T>(this, data)
+      return save ? doc.set(data).then(() => doc) : doc
    }
 
    /**
@@ -54,10 +54,10 @@ export class Collection<T extends DataType> extends StoreEntity {
     */
    async doc(id?: string): Promise<Document<T>> {
       if (is.empty(id)) {
-         return new Document(this);
+         return new Document(this)
       }
-      const doc = new Document(this, id);
-      return this.client.getDocument(doc);
+      const doc = new Document(this, id)
+      return this.client.getDocument(doc)
    }
 
    /**
@@ -67,7 +67,7 @@ export class Collection<T extends DataType> extends StoreEntity {
     * query.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#endAt
     */
-   endAt = (value: Boundary<T>): Query<T> => new Query(this).endAt(value);
+   endAt = (value: Boundary<T>): Query<T> => new Query(this).endAt(value)
 
    /**
     * Creates a new query where the results end before the provided document
@@ -77,7 +77,7 @@ export class Collection<T extends DataType> extends StoreEntity {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#endBefore
     */
    endBefore = (value: Boundary<T>): Query<T> =>
-      new Query(this).endBefore(value);
+      new Query(this).endBefore(value)
 
    /**
     * Executes the query and returns the results as a QuerySnapshot.
@@ -92,14 +92,14 @@ export class Collection<T extends DataType> extends StoreEntity {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#isEqual
     */
    isEqual = (other: Collection<T>): boolean =>
-      this.id == other.id && this.schema.name == other.schema.name;
+      this.id == other.id && this.schema.name == other.schema.name
 
    /**
     * Creates a new query where the results are limited to the specified number
     * of documents.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#limit
     */
-   limit = (count: number): Query<T> => new Query(this).limit(count);
+   limit = (count: number): Query<T> => new Query(this).limit(count)
 
    /**
     * Creates a new query where the results are sorted by the specified field,
@@ -109,7 +109,7 @@ export class Collection<T extends DataType> extends StoreEntity {
    orderBy = (
       fieldName: keyof T,
       direction: SortDirection = SortDirection.Ascending
-   ): Query<T> => new Query(this).orderBy(fieldName, direction);
+   ): Query<T> => new Query(this).orderBy(fieldName, direction)
 
    /**
     * Creates a new query where the results start after the provided document
@@ -119,7 +119,7 @@ export class Collection<T extends DataType> extends StoreEntity {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#startAfter
     */
    startAfter = (value: Boundary<T>): Query<T> =>
-      new Query(this).startAfter(value);
+      new Query(this).startAfter(value)
 
    /**
     * Creates a new query where the results start at the provided document
@@ -128,7 +128,7 @@ export class Collection<T extends DataType> extends StoreEntity {
     * the query.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.CollectionReference#startAt
     */
-   startAt = (value: Boundary<T>): Query<T> => new Query(this).startAt(value);
+   startAt = (value: Boundary<T>): Query<T> => new Query(this).startAt(value)
 
    /**
     * Creates a new query that returns only documents that include the specified
@@ -139,5 +139,5 @@ export class Collection<T extends DataType> extends StoreEntity {
       fieldName: K,
       operator: Operator,
       value: T[K]
-   ): Query<T> => new Query(this).where(fieldName, operator, value);
+   ): Query<T> => new Query(this).where(fieldName, operator, value)
 }

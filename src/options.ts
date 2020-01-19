@@ -1,4 +1,4 @@
-import { DataType } from './types';
+import { DataType } from './types'
 
 /**
  * An options object that configures the behavior of `set()` calls. These calls
@@ -12,11 +12,11 @@ export interface SetOptions<T extends DataType> {
     * If `true` then only document values with new set values will be replaced.
     * Otherwise, all document data will be replaced with the new values.
     */
-   merge?: boolean;
+   merge?: boolean
 
    /**
     * Specify field names to have only those specific fields replaced by the
     * new values.
     */
-   mergeFields?: (keyof T)[];
+   mergeFields?: (keyof T)[]
 }

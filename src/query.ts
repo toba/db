@@ -1,31 +1,31 @@
-import { Document, Result, Collection } from './';
-import { DataType } from './types';
+import { Document, Result, Collection } from './'
+import { DataType } from './types'
 
 export enum SortDirection {
    Ascending,
    Descending
 }
 
-export type Operator = '>' | '>=' | '<' | '<=' | '==' | 'contains';
+export type Operator = '>' | '>=' | '<' | '<=' | '==' | 'contains'
 
-export type Boundary<T extends DataType> = Document<T> | Partial<T>;
+export type Boundary<T extends DataType> = Document<T> | Partial<T>
 
 export interface Range<T extends DataType> {
-   endAt?: Boundary<T>;
-   endBefore?: Boundary<T>;
-   startAfter?: Boundary<T>;
-   startAt?: Boundary<T>;
+   endAt?: Boundary<T>
+   endBefore?: Boundary<T>
+   startAfter?: Boundary<T>
+   startAt?: Boundary<T>
 }
 
 export interface Match<T extends DataType, K extends keyof T> {
-   field?: K;
-   value?: T[K] | Array<T[K]>;
-   operator?: Operator;
+   field?: K
+   value?: T[K] | Array<T[K]>
+   operator?: Operator
 }
 
 export interface Sort<T extends DataType> {
-   field?: keyof T;
-   direction?: SortDirection;
+   field?: keyof T
+   direction?: SortDirection
 }
 
 /**
@@ -34,17 +34,17 @@ export interface Sort<T extends DataType> {
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query
  */
 export class Query<T extends DataType> {
-   private collection: Collection<T>;
-   max: number = 0;
-   sort: Sort<T> = {};
-   match: Match<T, keyof T> = {};
-   range: Range<T> = {};
+   private collection: Collection<T>
+   max: number = 0
+   sort: Sort<T> = {}
+   match: Match<T, keyof T> = {}
+   range: Range<T> = {}
 
    /**
     * @param collection Collection the query will run against
     */
    constructor(collection: Collection<T>) {
-      this.collection = collection;
+      this.collection = collection
    }
 
    /**
@@ -55,8 +55,8 @@ export class Query<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#endat
     */
    endAt(value: Boundary<T>): this {
-      this.range.endAt = value;
-      return this;
+      this.range.endAt = value
+      return this
    }
 
    /**
@@ -67,15 +67,15 @@ export class Query<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#endBefore
     */
    endBefore(value: Boundary<T>): this {
-      this.range.endBefore = value;
-      return this;
+      this.range.endBefore = value
+      return this
    }
 
    /**
     * Executes the query and returns the results.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#get
     */
-   get = (): Result<T> => this.collection.client.query(this);
+   get = (): Result<T> => this.collection.client.query(this)
 
    /**
     * Creates a new query where the results are limited to the specified number
@@ -83,8 +83,8 @@ export class Query<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#limit
     */
    limit(count: number): this {
-      this.max = count;
-      return this;
+      this.max = count
+      return this
    }
 
    /**
@@ -96,9 +96,9 @@ export class Query<T extends DataType> {
       fieldName: keyof T,
       direction: SortDirection = SortDirection.Ascending
    ): this {
-      this.sort.field = fieldName;
-      this.sort.direction = direction;
-      return this;
+      this.sort.field = fieldName
+      this.sort.direction = direction
+      return this
    }
 
    /**
@@ -109,8 +109,8 @@ export class Query<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#startAfter
     */
    startAfter(value: Boundary<T>): this {
-      this.range.startAfter = value;
-      return this;
+      this.range.startAfter = value
+      return this
    }
 
    /**
@@ -121,8 +121,8 @@ export class Query<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#startAfter
     */
    startAt(value: Boundary<T>): this {
-      this.range.startAt = value;
-      return this;
+      this.range.startAt = value
+      return this
    }
 
    where<K extends keyof T>(
@@ -130,10 +130,10 @@ export class Query<T extends DataType> {
       operator: Operator,
       value: T[K] | Array<T[K]>
    ): this {
-      this.match.field = fieldName;
-      this.match.operator = operator;
-      this.match.value = value;
+      this.match.field = fieldName
+      this.match.operator = operator
+      this.match.value = value
 
-      return this;
+      return this
    }
 }

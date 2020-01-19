@@ -1,4 +1,4 @@
-import { is, EventEmitter } from '@toba/tools';
+import { is, EventEmitter } from '@toba/tools'
 import {
    Document,
    Collection,
@@ -7,9 +7,9 @@ import {
    Result,
    CollectionSchema,
    indexName
-} from '.';
-import { domStringListToArray } from './tools';
-import { DataType } from './types';
+} from '.'
+import { domStringListToArray } from './tools'
+import { DataType } from './types'
 
 export enum AccessType {
    ReadWrite = 'readwrite',
@@ -29,7 +29,7 @@ export enum DataEvent {
 const createOptions: IDBObjectStoreParameters = {
    keyPath: 'id',
    autoIncrement: false
-};
+}
 
 /**
  * `DataClient` is the IndexedDB client. It is initialized with a `Schema` that
@@ -43,28 +43,28 @@ const createOptions: IDBObjectStoreParameters = {
  * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
  */
 export class DataClient extends EventEmitter<DataEvent, any> {
-   private schema: Schema;
+   private schema: Schema
    /**
     * The open database. It will be `null` if the database hasn't yet been
     * opened.
     */
-   private db: IDBDatabase | null = null;
+   private db: IDBDatabase | null = null
 
    constructor(schema: Schema) {
-      super();
-      this.schema = schema;
+      super()
+      this.schema = schema
    }
 
    protected get name() {
-      return this.schema.name;
+      return this.schema.name
    }
 
    protected get version() {
-      return this.schema.version;
+      return this.schema.version
    }
 
    protected get collectionSchemas() {
-      return this.schema.collections;
+      return this.schema.collections
    }
 
    /**
@@ -74,9 +74,9 @@ export class DataClient extends EventEmitter<DataEvent, any> {
       this.db !== null
          ? Promise.resolve(this.db)
          : new Promise(async resolve => {
-              await this.open();
-              resolve(this.db!);
-           });
+              await this.open()
+              resolve(this.db!)
+           })
 
    /**
     *
@@ -87,17 +87,17 @@ export class DataClient extends EventEmitter<DataEvent, any> {
     */
    open = () =>
       new Promise<void>((resolve, reject) => {
-         const req = indexedDB.open(this.name, this.version);
+         const req = indexedDB.open(this.name, this.version)
 
-         req.onerror = this.onError(req, reject);
-         req.onsuccess = this.onSuccess(req, resolve);
-         req.onupgradeneeded = this.upgrade(req);
-      });
+         req.onerror = this.onError(req, reject)
+         req.onsuccess = this.onSuccess(req, resolve)
+         req.onupgradeneeded = this.upgrade(req)
+      })
 
    close() {
       if (this.db !== null) {
-         this.db.close();
-         this.db = null;
+         this.db.close()
+         this.db = null
       }
    }
 
@@ -110,11 +110,11 @@ export class DataClient extends EventEmitter<DataEvent, any> {
       closeDatabase: boolean = true
    ) => () => {
       if (closeDatabase) {
-         this.close();
+         this.close()
       }
-      cb(req.error);
-      this.removeAll(DataEvent.Error);
-   };
+      cb(req.error)
+      this.removeAll(DataEvent.Error)
+   }
 
    /**
     * If the database exists and is the same version as requested then this
@@ -122,14 +122,14 @@ export class DataClient extends EventEmitter<DataEvent, any> {
     * will happen first.
     */
    private onSuccess = (req: IDBOpenDBRequest, cb: () => void) => () => {
-      this.db = req.result;
-      cb();
+      this.db = req.result
+      cb()
 
       this.db.onerror = (event: Event) => {
          // TODO: evaluate whether db should be closed
-         this.emit(DataEvent.Error, event);
-      };
-   };
+         this.emit(DataEvent.Error, event)
+      }
+   }
 
    /**
     * If no previous version exists, all object stores and indexes should be
@@ -147,10 +147,10 @@ export class DataClient extends EventEmitter<DataEvent, any> {
    private upgrade = (req: IDBOpenDBRequest) => (
       _ev: IDBVersionChangeEvent
    ) => {
-      const db = req.result;
+      const db = req.result
 
       this.collectionSchemas.forEach(c => {
-         const os = db.createObjectStore(c.name, createOptions);
+         const os = db.createObjectStore(c.name, createOptions)
 
          if (is.array(c.indexes)) {
             c.indexes.forEach(i => {
@@ -159,45 +159,45 @@ export class DataClient extends EventEmitter<DataEvent, any> {
                // the coercion
                os.createIndex(indexName(i), i.field as string | string[], {
                   unique: i.unique
-               });
-            });
+               })
+            })
          }
-      });
-   };
+      })
+   }
 
    /**
     * Names of collections created within the data store.
     */
    async collectionNames(): Promise<string[]> {
-      const db = await this.ensureDB();
-      return domStringListToArray(db.objectStoreNames);
+      const db = await this.ensureDB()
+      return domStringListToArray(db.objectStoreNames)
    }
 
    // overloads
-   async indexNames(collectionID: string): Promise<string[]>;
+   async indexNames(collectionID: string): Promise<string[]>
    async indexNames<T extends DataType>(
       schema: CollectionSchema<T>
-   ): Promise<string[]>;
+   ): Promise<string[]>
    /**
     * Names of all indexes in a collection.
     */
    async indexNames<T extends DataType>(
       schemaOrID: string | CollectionSchema<T>
    ): Promise<string[]> {
-      const id: string = is.text(schemaOrID) ? schemaOrID : schemaOrID.name;
-      const os = await this.objectStore(id);
-      return domStringListToArray(os.indexNames);
+      const id: string = is.text(schemaOrID) ? schemaOrID : schemaOrID.name
+      const os = await this.objectStore(id)
+      return domStringListToArray(os.indexNames)
    }
 
    // overloads
    private async objectStore(
       id: string,
       access?: AccessType
-   ): Promise<IDBObjectStore>;
+   ): Promise<IDBObjectStore>
    private async objectStore<T extends DataType>(
       doc: Document<T>,
       access?: AccessType
-   ): Promise<IDBObjectStore>;
+   ): Promise<IDBObjectStore>
    /**
     * Create and return an object store transaction. If more than one object
     * store should participate in the transaction then the transaction and its
@@ -207,35 +207,35 @@ export class DataClient extends EventEmitter<DataEvent, any> {
       docOrID: Document<T> | string,
       access: AccessType = AccessType.ReadOnly
    ): Promise<IDBObjectStore> {
-      const db = await this.ensureDB();
-      const id = is.text(docOrID) ? docOrID : docOrID.parent.id;
-      return db.transaction(id, access).objectStore(id);
+      const db = await this.ensureDB()
+      const id = is.text(docOrID) ? docOrID : docOrID.parent.id
+      return db.transaction(id, access).objectStore(id)
    }
 
    saveDocument = <T extends DataType>(doc: Document<T>) =>
       new Promise<void>(async (resolve, reject) => {
-         const os = await this.objectStore(doc, AccessType.ReadWrite);
-         const req: IDBRequest<IDBValidKey> = os.add(doc.data());
+         const os = await this.objectStore(doc, AccessType.ReadWrite)
+         const req: IDBRequest<IDBValidKey> = os.add(doc.data())
 
-         req.onsuccess = () => resolve();
-         req.onerror = () => reject();
-      });
+         req.onsuccess = () => resolve()
+         req.onerror = () => reject()
+      })
 
    deleteDocument = <T extends DataType>(doc: Document<T>) =>
       new Promise<void>(async (resolve, reject) => {
-         const os = await this.objectStore(doc, AccessType.ReadWrite);
-         const req: IDBRequest = os.delete(doc.id);
+         const os = await this.objectStore(doc, AccessType.ReadWrite)
+         const req: IDBRequest = os.delete(doc.id)
 
-         req.onsuccess = () => resolve();
-         req.onerror = () => reject();
-      });
+         req.onsuccess = () => resolve()
+         req.onerror = () => reject()
+      })
 
    // overloads
-   getDocument<T extends DataType>(doc: Document<T>): Promise<Document<T>>;
+   getDocument<T extends DataType>(doc: Document<T>): Promise<Document<T>>
    getDocument<T extends DataType>(
       collection: CollectionSchema<T>,
       id: string
-   ): Promise<Document<T>>;
+   ): Promise<Document<T>>
    /**
     * Retrieve a single document. A new transaction will always be created to
     * save the document so this operation can always be read-only. Method will
@@ -246,23 +246,23 @@ export class DataClient extends EventEmitter<DataEvent, any> {
       id?: string
    ) {
       return new Promise<Document<T>>(async (resolve, reject) => {
-         const doc = this.ensureDoc(docOrSchema, id);
-         const os = await this.objectStore(doc);
-         const req: IDBRequest<T> = os.get(doc.id);
+         const doc = this.ensureDoc(docOrSchema, id)
+         const os = await this.objectStore(doc)
+         const req: IDBRequest<T> = os.get(doc.id)
 
          req.onsuccess = () => {
             if (req.result === undefined) {
-               resolve(undefined);
+               resolve(undefined)
             } else {
-               doc.setWithoutSaving(req.result);
-               resolve(doc);
+               doc.setWithoutSaving(req.result)
+               resolve(doc)
             }
-         };
+         }
 
          req.onerror = () => {
-            reject();
-         };
-      });
+            reject()
+         }
+      })
    }
 
    /**
@@ -273,18 +273,16 @@ export class DataClient extends EventEmitter<DataEvent, any> {
       id?: string
    ): Document<T> {
       if (docOrSchema instanceof Document) {
-         return docOrSchema;
+         return docOrSchema
       } else {
-         const schema = docOrSchema;
+         const schema = docOrSchema
          if (id === undefined) {
             throw Error(
-               `No ID given to retrieve document from "${
-                  schema.name
-               }" collection`
-            );
+               `No ID given to retrieve document from "${schema.name}" collection`
+            )
          }
-         const c = new Collection<T>(this, schema);
-         return new Document<T>(c, id);
+         const c = new Collection<T>(this, schema)
+         return new Document<T>(c, id)
       }
    }
 
@@ -296,6 +294,6 @@ export class DataClient extends EventEmitter<DataEvent, any> {
     * @see https://stackoverflow.com/a/15625231/6823622
     */
    query<T extends DataType>(q: Query<T>): Result<T> {
-      return new Result(q, []);
+      return new Result(q, [])
    }
 }

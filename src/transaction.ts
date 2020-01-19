@@ -1,5 +1,5 @@
-import { Document, SetOptions } from './';
-import { StoreEntity, DataType } from './types';
+import { Document, SetOptions } from './'
+import { StoreEntity, DataType } from './types'
 
 /**
  * A reference to a transaction. The `Transaction` object passed to a
@@ -12,25 +12,25 @@ export class Transaction<T extends DataType> extends StoreEntity {
     * Deletes the document referred to by the provided DocumentReference.
     */
    delete(doc: Document<T>): Promise<void> {
-      return doc.delete();
+      return doc.delete()
    }
 
    get(doc: Document<T>): Promise<T | undefined> {
-      return Promise.resolve<T | undefined>(doc.data());
+      return Promise.resolve<T | undefined>(doc.data())
    }
 
    set(doc: Document<T>, values: T, options: SetOptions<T>): this {
-      return this;
+      return this
    }
 
    update(doc: Document<T>, values: Partial<T>): this {
-      return this;
+      return this
    }
 
    /**
     * Execute a function for each document in a collection.
     */
    forEach(fn: (values: T) => void) {
-      return;
+      return
    }
 }

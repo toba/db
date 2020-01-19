@@ -1,5 +1,5 @@
-import { DataType, ExcludeID } from './types';
-import { is } from '@toba/tools';
+import { DataType, ExcludeID } from './types'
+import { is } from '@toba/tools'
 
 /**
  * Idempotent index name used to store and look-up the index in the data
@@ -8,18 +8,18 @@ import { is } from '@toba/tools';
 export const indexName = <T extends DataType>(index: Index<T>): string =>
    is.array(index.field)
       ? index.field.sort().join('-')
-      : (index.field as string);
+      : (index.field as string)
 
 export interface Index<T extends DataType> {
    /** Field name or names to be indexed other than `id` */
-   field: ExcludeID<T> | (ExcludeID<T>[]);
+   field: ExcludeID<T> | ExcludeID<T>[]
    /** Whether index vaiues should be unique */
-   unique?: boolean;
+   unique?: boolean
 }
 
 // TODO: this is provider-specific
 export interface Marshall<T extends DataType> {
-   field: keyof T;
+   field: keyof T
 }
 
 /**
@@ -28,9 +28,9 @@ export interface Marshall<T extends DataType> {
  */
 export interface CollectionSchema<T extends DataType> {
    /** Collection name */
-   name: string;
+   name: string
    /** Fields that should be indexed */
-   indexes?: Index<T>[];
+   indexes?: Index<T>[]
 }
 
 /**
@@ -38,7 +38,7 @@ export interface CollectionSchema<T extends DataType> {
  */
 export interface Schema {
    /** Database name */
-   name: string;
+   name: string
 
    /**
     * The version to open the database with. If the version is not provided and
@@ -48,8 +48,8 @@ export interface Schema {
     * (IndexedDB documentation).
     * @see https://developer.mozilla.org/en-US/docs/Web/API/IDBFactory/open#Parameters
     */
-   version: number;
+   version: number
 
    /** Document collection schemas */
-   collections: CollectionSchema<any>[];
+   collections: CollectionSchema<any>[]
 }
