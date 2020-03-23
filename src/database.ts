@@ -7,21 +7,21 @@ export class Database extends StoreEntity {
    /**
     * Schema that defines the collections, their data types and indexes.
     */
-   private schema: Schema
+   #schema: Schema
 
    constructor(client: DataClient, schema: Schema) {
       super(client)
-      this.schema = schema
+      this.#schema = schema
    }
 
    open = () => this.client.open()
 
    get name() {
-      return this.schema.name
+      return this.#schema.name
    }
 
    get version() {
-      return this.schema.version
+      return this.#schema.version
    }
 
    /**
@@ -29,7 +29,7 @@ export class Database extends StoreEntity {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Firestore#collection
     */
    async collection<T extends DataType>(id: string): Promise<Collection<T>> {
-      const schema = this.schema.collections.find(c => c.name == id)
+      const schema = this.#schema.collections.find(c => c.name == id)
       if (schema === undefined) {
          return Promise.reject(
             `Collection "${id}" does not exist in database ${this.name}`

@@ -43,39 +43,39 @@ const createOptions: IDBObjectStoreParameters = {
  * @see https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
  */
 export class DataClient extends EventEmitter<DataEvent, any> {
-   private schema: Schema
+   #schema: Schema
    /**
     * The open database. It will be `null` if the database hasn't yet been
     * opened.
     */
-   private db: IDBDatabase | null = null
+   #db: IDBDatabase | null = null
 
    constructor(schema: Schema) {
       super()
-      this.schema = schema
+      this.#schema = schema
    }
 
    protected get name() {
-      return this.schema.name
+      return this.#schema.name
    }
 
    protected get version() {
-      return this.schema.version
+      return this.#schema.version
    }
 
    protected get collectionSchemas() {
-      return this.schema.collections
+      return this.#schema.collections
    }
 
    /**
     * Ensure databse is created and open.
     */
    private ensureDB = (): Promise<IDBDatabase> =>
-      this.db !== null
-         ? Promise.resolve(this.db)
+      this.#db !== null
+         ? Promise.resolve(this.#db)
          : new Promise(async resolve => {
               await this.open()
-              resolve(this.db!)
+              resolve(this.#db!)
            })
 
    /**
@@ -95,9 +95,9 @@ export class DataClient extends EventEmitter<DataEvent, any> {
       })
 
    close() {
-      if (this.db !== null) {
-         this.db.close()
-         this.db = null
+      if (this.#db !== null) {
+         this.#db.close()
+         this.#db = null
       }
    }
 
@@ -122,10 +122,10 @@ export class DataClient extends EventEmitter<DataEvent, any> {
     * will happen first.
     */
    private onSuccess = (req: IDBOpenDBRequest, cb: () => void) => () => {
-      this.db = req.result
+      this.#db = req.result
       cb()
 
-      this.db.onerror = (event: Event) => {
+      this.#db.onerror = (event: Event) => {
          // TODO: evaluate whether db should be closed
          this.emit(DataEvent.Error, event)
       }

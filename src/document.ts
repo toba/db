@@ -31,7 +31,7 @@ export class Document<T extends DataType> {
    /**
     * All data contained by the document.
     */
-   private values?: T
+   #values?: T
 
    /**
     * Create an empty document. If no ID is provied than a ULID will be
@@ -52,7 +52,7 @@ export class Document<T extends DataType> {
          } else {
             id = dataOrID.id
          }
-         this.values = dataOrID
+         this.#values = dataOrID
       } else if (!is.empty(dataOrID)) {
          id = dataOrID
       }
@@ -65,14 +65,14 @@ export class Document<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#~exists
     */
    get exists() {
-      return is.value<T>(this.values)
+      return is.value<T>(this.#values)
    }
 
    /**
     * Document data (plain object) or `undefined` if the document doesn't exist.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#data
     */
-   data = () => this.values
+   data = () => this.#values
 
    /**
     * The value of the field `key` in the document data or `undefined` if it
@@ -80,7 +80,7 @@ export class Document<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentSnapshot#get
     */
    get = <K extends keyof T>(key: K): T[K] | undefined =>
-      this.values !== undefined ? this.values[key] : undefined
+      this.#values !== undefined ? this.#values[key] : undefined
 
    /**
     * Remove document data from the store.
@@ -97,7 +97,7 @@ export class Document<T extends DataType> {
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.DocumentReference#update
     */
    update = (values: Partial<T>): Promise<void> =>
-      this.values === undefined
+      this.#values === undefined
          ? Promise.reject()
          : this.set(values, { merge: true })
 
@@ -112,7 +112,7 @@ export class Document<T extends DataType> {
       return this.parent.client.saveDocument(this)
    }
 
-   toString = () => JSON.stringify(this.values)
+   toString = () => JSON.stringify(this.#values)
 
    /**
     * Set document values without saving them. This will typically only be used
@@ -125,9 +125,9 @@ export class Document<T extends DataType> {
          )
       }
 
-      if (this.values === undefined || options === undefined) {
+      if (this.#values === undefined || options === undefined) {
          // TODO: way to do this without type coercion?
-         this.values = values as T
+         this.#values = values as T
       } else if (options !== undefined) {
          if (is.array<keyof T>(options.mergeFields)) {
             // only merge the listed fields
@@ -135,10 +135,10 @@ export class Document<T extends DataType> {
             options.mergeFields.forEach(f => {
                selected[f] = values[f] as T[keyof T] | undefined
             })
-            this.values = merge(this.values, selected)
+            this.#values = merge(this.#values, selected)
          } else if (options.merge === true) {
             // merge given values but otherwise leave existing data as is
-            this.values = merge(this.values, values)
+            this.#values = merge(this.#values, values)
          }
       }
       return this

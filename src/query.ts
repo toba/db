@@ -34,7 +34,7 @@ export interface Sort<T extends DataType> {
  * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query
  */
 export class Query<T extends DataType> {
-   private collection: Collection<T>
+   #collection: Collection<T>
    max: number = 0
    sort: Sort<T> = {}
    match: Match<T, keyof T> = {}
@@ -44,7 +44,7 @@ export class Query<T extends DataType> {
     * @param collection Collection the query will run against
     */
    constructor(collection: Collection<T>) {
-      this.collection = collection
+      this.#collection = collection
    }
 
    /**
@@ -75,7 +75,7 @@ export class Query<T extends DataType> {
     * Executes the query and returns the results.
     * @see https://firebase.google.com/docs/reference/js/firebase.firestore.Query.html#get
     */
-   get = (): Result<T> => this.collection.client.query(this)
+   get = (): Result<T> => this.#collection.client.query(this)
 
    /**
     * Creates a new query where the results are limited to the specified number

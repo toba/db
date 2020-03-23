@@ -1,1 +1,1 @@
-module.exports = require('@toba/develop/prettier');
+module.exports = require('@toba/develop/prettier')
